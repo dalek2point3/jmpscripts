@@ -1,5 +1,8 @@
-This Repo contains scripts for processing OpenStreetMap files
+OpenStreetMap Scripts
 ===
+
+This Repo contains scripts for processing OpenStreetMap files
+
 
 * This is a test point
 * And another
