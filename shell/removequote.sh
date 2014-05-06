@@ -1,0 +1,1 @@
+sed 's/\"//g' ../../rawdata/osm/test.csv > ../../rawdata/osm/test.csv
