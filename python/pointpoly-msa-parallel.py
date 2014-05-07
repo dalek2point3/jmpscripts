@@ -1,9 +1,10 @@
 import sys
 # from shapely.geometry import Polygon, Point, MultiPoint
 import timeit
-import ogr
+# import ogr
 import csv
 import os
+from math import floor
 
 ''' This script takes a shape file intersects it with an OSM changeset file '''
 
@@ -14,22 +15,22 @@ start = timeit.default_timer()
 filename = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/msa.shp'
 
 # load the shape file as a layer
-drv = ogr.GetDriverByName('ESRI Shapefile')
-ds_in = drv.Open(filename)
+# drv = ogr.GetDriverByName('ESRI Shapefile')
+# ds_in = drv.Open(filename)
 
-if ds_in is None:
-    print 'Could not open %s' % (filename)
-else:
-    print 'Opened %s' % (filename)
-    lyr_in = ds_in.GetLayer(0)
-    featureCount = lyr_in.GetFeatureCount()
-    print "Number of features in %s: %d" % (os.path.basename(filename),featureCount)
+# if ds_in is None:
+#     print 'Could not open %s' % (filename)
+# else:
+#     print 'Opened %s' % (filename)
+#     lyr_in = ds_in.GetLayer(0)
+#     featureCount = lyr_in.GetFeatureCount()
+#     print "Number of features in %s: %d" % (os.path.basename(filename),featureCount)
 
 # field index for which i want the data extracted 
 # ("FIPS_CNTRY" was what i was looking for)
-idx_reg = lyr_in.GetLayerDefn().GetFieldIndex("id")
+# idx_reg = lyr_in.GetLayerDefn().GetFieldIndex("id")
 
-def check(lon, lat):
+def check2(lon, lat):
     # create point geometry
     pt = ogr.Geometry(ogr.wkbPoint)
     pt.SetPoint_2D(0, lon, lat)
@@ -42,10 +43,34 @@ def check(lon, lat):
         if ply.Contains(pt):
             return feat_in.GetFieldAsString(idx_reg)
 
+def check(lon, lat):
+    pass
+
+
+def readtilefile(infile):
+
+    lookup = []
+    with open(infile) as infileh:
+        csvreader = csv.DictReader(infileh, delimiter = "\t", quotechar = '"')
+        fields = csvreader.fieldnames
+        cnt = 0
+        for line in csvreader:
+            lookup.append(line)
+            cnt = cnt+1
+            if cnt > 100: break
+    return lookup
+
 def writelog(logfileh, data):
     logfileh.write(data + "\n")
 
-def main(pointfile, outfilestub, startflag=0, step=10):
+def gettile(lon, lat, lookup):
+    lon_tmp = 0.01 * floor(lon/0.01)
+    lat_tmp = 0.01 * floor(lat/0.01)
+    tilename = str(lon_tmp) + " / " + str(lat_tmp)
+    print tilename
+
+
+def main(pointfile, outfilestub, lookup, startflag=0, step=10):
 
     startflag = (startflag-1) * 1000
     outfile = outfilestub + "_" + str(startflag) + "-" + str(startflag+step) + ".csv"
@@ -57,7 +82,7 @@ def main(pointfile, outfilestub, startflag=0, step=10):
 
         csvreader = csv.DictReader(infileh, delimiter = "\t")
         fields = csvreader.fieldnames
-        fields.extend(['id'])
+        fields.extend(['fips','geoid10'])
         
         for _ in xrange(startflag):
             next(csvreader)
@@ -68,11 +93,12 @@ def main(pointfile, outfilestub, startflag=0, step=10):
             for line in csvreader:
                 count += 1
                 if count < startflag + step:
-          
-                    pt_lon = float(line['lon'])
-                    pt_lat = float(line['lat'])
 
-                    line['id'] = check(pt_lon, pt_lat)
+                    pt_lon = float(line['@lon'])
+                    pt_lat = float(line['@lat'])
+                    print gettile(pt_lon, pt_lat, lookup), pt_lon, pt_lat
+
+                    # line['id'] = check(pt_lon, pt_lat)
 
                     if (count % 1000) == 0:
                         stop = timeit.default_timer()
@@ -92,12 +118,18 @@ if __name__ == "__main__":
 
     ## this is where you set your input and output files. 
     ## use the other script in this package to convert changesets to csv
-    pointfile = "../filedata/usadevices/trips.csv"
+    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/test.csv"
 
     # specify start and end points here.
     startflag = int(sys.argv[1].strip())
     step = int(sys.argv[2].strip())
 
     # testing output file
-    outfilestub = "../filedata/usadevices/classify/file"
-    main(pointfile, outfilestub, startflag, step)
+    outfilestub = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/file"
+
+
+    lookup = readtilefile("/mnt/nfs6/wikipedia.proj/jmp/rawdata/maps/tilelookup.csv")
+    print "lookup finished slurping"
+    main(pointfile, outfilestub, lookup, startflag, step)    
+
+

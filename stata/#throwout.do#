@@ -15,15 +15,42 @@ cd `path'
 // 3. match history data to cleant tiles
 
 // Create the tile DTA file
-insheet using `rawmaps'goodtiles_small.csv, clear
-
+insheet using `rawmaps'goodtiles_county.csv, clear
 gen x_tmp = round(v2, .01)
 gen y_tmp = round(v3, .01)
-rename v4 cnty_fips
+rename v4 fips
+gen tilename = string(x_tmp) + " / " + string(y_tmp)
+rename v5 countyname
+
+outsheet tilename fips using `rawmaps'tilenames_county, replace
+save `rawmaps'goodtiles_county, replace
+
+insheet using `rawmaps'goodtiles_msa.csv, clear
+gen x_tmp = round(v2, .01)
+gen y_tmp = round(v3, .01)
+rename v4 geoid10
 gen tilename = string(x_tmp) + " / " + string(y_tmp)
 
-outsheet tilename cnty_fips using `rawmaps'tilenames_county, replace
-save `rawmaps'goodtiles, replace
+outsheet tilename geoid using `rawmaps'tilenames_msa.csv, replace
+save `rawmaps'goodtiles_msa, replace
+
+// merge to create tile lookup
+use `rawmaps'goodtiles_msa, clear
+
+merge 1:1 tilename using `rawmaps'goodtiles_county
+
+drop v1 v2 v3 
+gen class = ""
+replace class = "both" if _m == 3
+replace class = "msa" if _m == 1
+replace class = "county" if _m == 2
+
+drop _merge
+rename v5 msaname
+
+save `rawmaps'tilelookup, replace
+outsheet using `rawmaps'tilelookup.csv, replace
+
 
 // Identify points that do not need to be classified
 
