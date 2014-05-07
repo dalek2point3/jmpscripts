@@ -53,7 +53,7 @@ def readtilefile(infile):
         for line in csvreader:
             lookup.append(line)
             cnt = cnt+1
-            if cnt > 999999: break
+            if cnt > 999999999: break
     return lookup
 
 def writelog(logfileh, data):
@@ -97,13 +97,15 @@ def main(pointfile, outfilestub, lookup, startflag=0, step=10):
                     
                     tile = gettile(pt_lon, pt_lat, lookup)
                     if tile != None:
-                        print count, tile, pt_lon, pt_lat
                         line['geoid10'] = tile['geoid10'] 
                         line['fips'] = tile['fips'] 
                         line['msaname'] = tile['msaname'] 
                         line['countyname'] = tile['countyname'] 
-                    #else:
-                    #    line['id'] = check(pt_lon, pt_lat)
+                    else:
+                        line['geoid10'] = "na"
+                        line['fips'] = "na" 
+                        line['msaname'] = "na" 
+                        line['countyname'] = "na" 
 
                     # line['id'] = check(pt_lon, pt_lat)
 
@@ -132,7 +134,7 @@ if __name__ == "__main__":
     step = int(sys.argv[2].strip())
 
     # testing output file
-    outfilestub = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/file"
+    outfilestub = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/ne"
 
     lookup = readtilefile("/mnt/nfs6/wikipedia.proj/jmp/rawdata/maps/tilelookup.csv")
     print "lookup finished slurping"
