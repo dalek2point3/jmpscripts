@@ -22,7 +22,7 @@ gen y_tmp = round(v3, .01)
 rename v4 cnty_fips
 gen tilename = string(x_tmp) + " / " + string(y_tmp)
 
-outsheet tilename cnty_fips using `rawmaps'tilenames, replace
+outsheet tilename cnty_fips using `rawmaps'tilenames_county, replace
 save `rawmaps'goodtiles, replace
 
 // Identify points that do not need to be classified
