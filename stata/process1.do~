@@ -22,11 +22,7 @@ args filenum region
 di "now processing `filenum'"
 di "now processing `region'"
 
-insheet using `rawosm'x_ne.csv, clear
-
-tab class, sort
-
-
+insheet using `rawosm'`region'chunk/`region'`filenum'.csv, clear nonames
 
 drop if _n == 1 & v1[1] == "@oname" 
 
