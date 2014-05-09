@@ -46,6 +46,7 @@ replace class = "msa" if _m == 1
 replace class = "county" if _m == 2
 
 drop _merge
+rename v5 msaname
 
 save `rawmaps'tilelookup, replace
 outsheet using `rawmaps'tilelookup.csv, replace

@@ -1,0 +1,70 @@
+ds
+list in 1
+list lat lon in 1/10
+ds
+list in1
+list in 1
+tab _m
+ls `stash'
+di `stash'
+di `rawosm'
+di "`rawosm'"
+list in 1
+count
+count
+list if _n == _N
+ds
+list in 1
+codebook tilename
+count
+tab cnty_fips, sort
+unique cnty_f
+ds
+drop tilename
+rename cnty_fips fips
+unique fips
+ds
+list in 1
+ds
+list in 1
+ds
+list in 1
+list in 
+list in 1
+list in 1
+ds
+list in 1
+tab _m
+tab class
+tab class, missing
+list in 1
+ds
+tab _merge
+ds
+list in 1
+ds
+list in 1
+list if _m == 3
+list if _m == 3 & _n < 122000
+tab class
+tab class, missing
+ds
+list in 1
+count
+tab class
+tab class, missing
+di args
+ds
+list in 1
+ds
+list in 1
+ds
+help if
+di v1[1]
+di `test'
+ds
+des
+ds
+list in 1
+ds
+list in 1
