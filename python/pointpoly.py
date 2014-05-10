@@ -11,37 +11,69 @@ from math import floor
 # some global variables are set here
 start = timeit.default_timer()
 
-# insert path for your shapefile here
-filename = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/msa.shp'
+# some more global
 
-# load the shape file as a layer
-drv = ogr.GetDriverByName('ESRI Shapefile')
-ds_in = drv.Open(filename)
+## TODO: remove harcoding
 
-if ds_in is None:
-    print 'Could not open %s' % (filename)
-else:
-    print 'Opened %s' % (filename)
-    lyr_in = ds_in.GetLayer(0)
-    featureCount = lyr_in.GetFeatureCount()
-    print "Number of features in %s: %d" % (os.path.basename(filename),featureCount)
+## county
+filename_cty = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/UScounties.shp'
+drv_cty = ogr.GetDriverByName('ESRI Shapefile')
+ds_cty = drv_cty.Open(filename_cty)
+lyr_cty = ds_cty.GetLayer(0)
+index_cty = lyr_cty.GetLayerDefn().GetFieldIndex("fips")
 
-# field index for which i want the data extracted 
-# ("FIPS_CNTRY" was what i was looking for)
-idx_reg = lyr_in.GetLayerDefn().GetFieldIndex("id")
+## msa
+filename_msa = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/msa.shp'
+filename_msa = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/cb_2012_us_uac10_500k.shp'
+drv_msa = ogr.GetDriverByName('ESRI Shapefile')
+ds_msa = drv_msa.Open(filename_msa)
+lyr_msa = ds_msa.GetLayer(0)
+index_msa = lyr_msa.GetLayerDefn().GetFieldIndex("GEOID10")
 
-def check(lon, lat):
+#print len(lyr_cty), index_cty
+#print len(lyr_msa), index_msa
+##
+
+
+def getlayer(filename, fieldname):
+    # load the shape file as a layer
+    drv = ogr.GetDriverByName('ESRI Shapefile')
+    ds_in = drv.Open(filename)
+
+    if ds_in is None:
+        print 'Could not open %s' % (filename)
+    else:
+        print 'Opened %s' % (filename)
+        lyr_in = ds_in.GetLayer(0)
+        featureCount = lyr_in.GetFeatureCount()
+        print "Number of features in %s: %d" % (os.path.basename(filename),featureCount)
+
+        # field index for which i want the data extracted 
+        index = lyr_in.GetLayerDefn().GetFieldIndex("fips")
+        return lyr_in
+
+def check(lon, lat, mode):
+
+    if mode == "cty":
+        lyr = lyr_cty
+        index = index_cty
+    else:
+        lyr = lyr_msa
+        index = index_msa
+
     # create point geometry
     pt = ogr.Geometry(ogr.wkbPoint)
     pt.SetPoint_2D(0, lon, lat)
-    lyr_in.SetSpatialFilter(pt)
+    lyr.SetSpatialFilter(pt)
 
     # go over all the polygons in the layer see if one include the point
-    for feat_in in lyr_in:
+    for feat_in in lyr:
         # roughly subsets features, instead of go over everything
         ply = feat_in.GetGeometryRef()
         if ply.Contains(pt):
-            return feat_in.GetFieldAsString(idx_reg)
+            return feat_in.GetFieldAsString(index)
+
+    return "NA"
 
 def writelog(logfileh, data):
     logfileh.write(data + "\n")
@@ -52,12 +84,10 @@ def geocode(line):
     pt_lat = float(line['v4']) ## v4 --> lat
 
     # TODO: it should geocode both msa and county at once
+    fips= check(pt_lon, pt_lat, "cty")
+    geoid10= check(pt_lon, pt_lat, "msa")
 
-    fips= check(pt_lon, pt_lat)
-
-    if fips != None:
-        print "found fips" + fips
-        line['fips'] = fips
+    print ('\t'.join([str(pt_lon), str(pt_lat), geoid10, fips]))
 
     return line
 
