@@ -1,7 +1,7 @@
 import sys
 # from shapely.geometry import Polygon, Point, MultiPoint
 import timeit
-# import ogr
+import ogr
 import csv
 import os
 from math import floor
@@ -15,20 +15,20 @@ start = timeit.default_timer()
 filename = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/msa.shp'
 
 # load the shape file as a layer
-# drv = ogr.GetDriverByName('ESRI Shapefile')
-# ds_in = drv.Open(filename)
+drv = ogr.GetDriverByName('ESRI Shapefile')
+ds_in = drv.Open(filename)
 
-# if ds_in is None:
-#     print 'Could not open %s' % (filename)
-# else:
-#     print 'Opened %s' % (filename)
-#     lyr_in = ds_in.GetLayer(0)
-#     featureCount = lyr_in.GetFeatureCount()
-#     print "Number of features in %s: %d" % (os.path.basename(filename),featureCount)
+if ds_in is None:
+    print 'Could not open %s' % (filename)
+else:
+    print 'Opened %s' % (filename)
+    lyr_in = ds_in.GetLayer(0)
+    featureCount = lyr_in.GetFeatureCount()
+    print "Number of features in %s: %d" % (os.path.basename(filename),featureCount)
 
 # field index for which i want the data extracted 
 # ("FIPS_CNTRY" was what i was looking for)
-# idx_reg = lyr_in.GetLayerDefn().GetFieldIndex("id")
+idx_reg = lyr_in.GetLayerDefn().GetFieldIndex("id")
 
 def check(lon, lat):
     # create point geometry
@@ -43,32 +43,25 @@ def check(lon, lat):
         if ply.Contains(pt):
             return feat_in.GetFieldAsString(idx_reg)
 
-def readtilefile(infile):
-
-    lookup = []
-    with open(infile) as infileh:
-        csvreader = csv.DictReader(infileh, delimiter = "\t", quotechar = '"')
-        fields = csvreader.fieldnames
-        cnt = 0
-        for line in csvreader:
-            lookup.append(line)
-            cnt = cnt+1
-            if cnt > 999999999: break
-    return lookup
-
 def writelog(logfileh, data):
     logfileh.write(data + "\n")
 
-def gettile(lon, lat, lookup):
-    lon_tmp = 0.01 * floor(lon/0.01)
-    lat_tmp = 0.01 * floor(lat/0.01)
-    tilename = str(lon_tmp) + " / " + str(lat_tmp)
-    
-    for item in lookup:
-        if item["tilename"] == tilename:
-            return item
+def geocode(line):
 
-def main(pointfile, outfilestub, lookup, startflag=0, step=10):
+    pt_lon = float(line['v3']) ## v3 --> lon
+    pt_lat = float(line['v4']) ## v4 --> lat
+
+    # TODO: it should geocode both msa and county at once
+
+    fips= check(pt_lon, pt_lat)
+
+    if fips != None:
+        print "found fips" + fips
+        line['fips'] = fips
+
+    return line
+
+def main(pointfile, outfilestub, startflag=0, step=10):
 
     startflag = (startflag-1) * 1000
     outfile = outfilestub + "_" + str(startflag) + "-" + str(startflag+step) + ".csv"
@@ -80,34 +73,22 @@ def main(pointfile, outfilestub, lookup, startflag=0, step=10):
 
         csvreader = csv.DictReader(infileh, delimiter = "\t")
         fields = csvreader.fieldnames
-        fields.extend(['fips','geoid10', 'countyname', 'msaname'])
-        
+
         for _ in xrange(startflag):
             next(csvreader)
 
         with open(outfile, "w") as fileh:
             csvwriter = csv.DictWriter(fileh, fields, delimiter="\t")
-
+            
             for line in csvreader:
                 count += 1
                 if count < startflag + step:
 
-                    pt_lon = float(line['@lon'])
-                    pt_lat = float(line['@lat'])
-                    
-                    tile = gettile(pt_lon, pt_lat, lookup)
-                    if tile != None:
-                        line['geoid10'] = tile['geoid10'] 
-                        line['fips'] = tile['fips'] 
-                        line['msaname'] = tile['msaname'] 
-                        line['countyname'] = tile['countyname'] 
+                    if line['class'] == "both":
+                        print "already geocoded: " + line['geoid10'] + "\t" + line['fips']
                     else:
-                        line['geoid10'] = "na"
-                        line['fips'] = "na" 
-                        line['msaname'] = "na" 
-                        line['countyname'] = "na" 
-
-                    # line['id'] = check(pt_lon, pt_lat)
+                        # print "geocoding now ..."
+                        line = geocode(line)
 
                     if (count % 1000) == 0:
                         stop = timeit.default_timer()
@@ -127,20 +108,17 @@ if __name__ == "__main__":
 
     ## this is where you set your input and output files. 
     ## use the other script in this package to convert changesets to csv
-    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/us-northeast.csv"
+    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/x_tmp.csv"
 
     # specify start and end points here.
     startflag = int(sys.argv[1].strip())
     step = int(sys.argv[2].strip())
 
+    print "starting"
+
     # testing output file
     outfilestub = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/ne"
 
-    lookup = readtilefile("/mnt/nfs6/wikipedia.proj/jmp/rawdata/maps/tilelookup.csv")
-    print "lookup finished slurping"
-    
-    # print gettile(-100.599, 40.203, lookup)
-
-    main(pointfile, outfilestub, lookup, startflag, step)    
+    main(pointfile, outfilestub, startflag, step)    
 
 
