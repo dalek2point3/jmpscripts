@@ -8,6 +8,7 @@ import os
 from math import floor
 
 ''' This script takes a shape file intersects it with an OSM changeset file '''
+''' It produces for each lat/lon point the MSA and the County that the point lies in '''
 
 # some global variables are set here
 start = timeit.default_timer()
