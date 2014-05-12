@@ -1,0 +1,4 @@
+python/logs/
+python/*.sh.o*
+stata/*~*
+*~*

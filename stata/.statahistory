@@ -68,3 +68,41 @@ ds
 list in 1
 ds
 list in 1
+ds
+tab class, missing
+help foreach
+help forvalues
+ds
+list in 1
+list in _n == _N
+list if _n == _N
+di `tmp'
+local `tmp'
+help forval
+di `tmp'
+insheet using `rawosm'nechunk/x_ne00.csv, clear
+di `tmp'
+insheet using `rawosm'nechunk/x_ne`tmp'.csv, clear
+di `tmp'
+di "`tmp'"
+di `tmp'
+di `tmp'
+clear
+ds
+list in 1
+d
+list in 1
+ds
+list in 1
+tab v39, missing
+tab v37, sort
+ds
+tab v33, sort
+list in 1
+tab v40
+ds
+list in 1
+tab v42
+tab v42, missing
+clear
+exit

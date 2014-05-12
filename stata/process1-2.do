@@ -24,19 +24,41 @@ args filenum region
 di "now processing `filenum'"
 di "now processing `region'"
 
-// insheet using `rawosm'x_`region'.csv, clear
-// outsheet if class=="" using `rawosm'xx_`region'.csv, replace
+insheet using `rawosm'x_`region'.csv, clear
+outsheet if class=="" using `rawosm'xx_`region'.csv, replace
 
 forval x = 0(1)9 {
+    log using tmp.log, append
+    insheet using `rawosm'`region'chunk/x_`region'00`x'.csv, clear
+    outsheet if class!="" using `rawosm'`region'chunk/xx_`region'00`x'.csv, replace
+    log close
+
+}
+
+forval x = 10(1)99 {
+    log using tmp.log, append
     insheet using `rawosm'`region'chunk/x_`region'0`x'.csv, clear
     outsheet if class=="" using `rawosm'`region'chunk/xx_`region'0`x'.csv, replace
+    log close
 
 }
 
-forval x = 10(1)`filenum' {
+forval x = 100(1)`filenum' {
+    log using tmp.log, append
     insheet using `rawosm'`region'chunk/x_`region'`x'.csv, clear
     outsheet if class=="" using `rawosm'`region'chunk/xx_`region'`x'.csv, replace
+    log close
 
 }
 
+
 // insheet using `rawosm'nechunk/xx_tmp.csv, clear
+insheet using `stash'ne_0-100000.csv, clear
+
+insheet using `stash'tmp.csv, clear
+
+codebook v33 v37 if v39 == "msa"
+
+codebook v33 v37 if v39 == ""
+
+tab v37, sort

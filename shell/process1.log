@@ -22,7 +22,7 @@ Notes:
 Note:  Your site can add messages to the introduction by editing the file
        stata.msg in the directory where Stata is installed.
 
-. do /mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/process1.do 00 so 
+. do /mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/process1.do 20 ne 
 
 . clear
 
@@ -49,6 +49,10 @@ Note:  Your site can add messages to the introduction by editing the file
 . 
 . // Identify points that do not need to be classified
 . 
+. di `tmp'
+
+
+. 
 . local filenum 00
 
 . local region mw
@@ -57,9 +61,23 @@ Note:  Your site can add messages to the introduction by editing the file
 
 . 
 . di "now processing `filenum'"
-now processing 00
+now processing 20
 
 . di "now processing `region'"
-now processing so
+now processing ne
 
 . 
+. // insheet using `rawosm'x_`region'.csv, clear
+. // outsheet if class=="" using `rawosm'xx_`region'.csv, replace
+. 
+. forval x = 0(1)`filenum'{
+  2.     local tmp string(`x',"%02.0f")
+  3.     insheet using `rawosm'nechunk/x_ne`tmp'.csv, clear
+  4.     outsheet if class=="" using `rawosm'nechunk/xx_ne`tmp'.csv, replace
+  5. 
+. }
+invalid '(' 
+r(198);
+
+end of do-file
+r(198);

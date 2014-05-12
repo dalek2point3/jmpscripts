@@ -20,4 +20,6 @@ export LD_LIBRARY_PATH=/mnt/nfs6/wikipedia.proj/gdalvenv/lib:$LD_LIBRARY_PATH
 
 # qsub -b y -cwd stata -b do /mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/process1.do 00 we
 
-qsub -b y -cwd stata -b do /mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/process1.do 87 mw
+qsub -b y -cwd stata -b do /mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/process1-2.do 151 so
+
+qsub -b y -cwd stata -b do /mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/process1-2.do 104 we
