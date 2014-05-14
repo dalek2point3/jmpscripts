@@ -101,10 +101,11 @@ def main(pointfile, outfilestub, startflag=0, step=10):
 
             for line in csvreader:
                 count += 1
-                if count < startflag + step + 1:
+                if count <= startflag + step:
 
                     line = geocode(line)
-                        
+                    print line
+
                     if (count % 1000) == 0:
                         stop = timeit.default_timer()
                         writelog(logfileh, str(round(stop-start,2)) + "(s) -- Finished " + str(count)) 
@@ -126,7 +127,8 @@ if __name__ == "__main__":
 
     ## this is where you set your input and output files. 
     ## use the other script in this package to convert changesets to csv
-    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/navmii/trips_oct-feb.csv"
+    # pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/trips/trips_oct-feb.csv"
+    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/trips_tmp.csv"
 
     # specify start and end points here.
     startflag = int(sys.argv[1].strip())
@@ -137,7 +139,7 @@ if __name__ == "__main__":
     print "starting at:" + str(datetime.now())
 
     # testing output file
-    outfilestub = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/trips"
+    outfilestub = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/x_"
 
     main(pointfile, outfilestub, startflag, step)    
 
