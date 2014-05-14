@@ -6,6 +6,8 @@ global rawosm "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/"
 global rawmaps "/mnt/nfs6/wikipedia.proj/jmp/rawdata/maps/"
 global rawtrips "/mnt/nfs6/wikipedia.proj/jmp/rawdata/trips/"
 global stash "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/"
+global myestimates "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/estimates/"
+global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
 
 cd `path'
 
@@ -19,17 +21,19 @@ renamevar
 
 trimvar
 
-gennewtripvar
+savetemp 1
+usetemp 1
+
+gentripvar
 
 merge m:1 fips using ${rawmaps}county_lookup, keep(match) nogen
 
 genmapvar
 
-savetemp 1
+savetemp 2
+usetemp 2
 
-
-// wilmingoton -- 95833
-// charleston -- 15508
+// find counts for wilmingoton -- 95833 & charleston -- 15508
 
 tabstat summsa if geoid10 == 95833
 tabstat summsa if geoid10 == 15508
@@ -37,11 +41,12 @@ tabstat summsa if geoid10 == 15508
 unique device if geoid10 == 95833
 unique device if geoid10 == 15508
 
+// cross sectional regression
+crossreg1
+makecrosstable
 
-reg1
 
-
-
+//////////////////////////////
 ///// program library
 
 program drop renamevar
@@ -90,8 +95,14 @@ program savetemp
 save `stash'tmp`1', replace
 end
 
-program drop gennewtripvar
-program gennewtripvar
+program drop usetemp
+program usetemp
+use `stash'tmp`1', clear
+end
+
+
+program drop gentripvar
+program gentripvar
 
 gen x_tmp = round(lon, .01)
 gen y_tmp = round(lat, .01)
@@ -99,12 +110,18 @@ gen tilename = string(x_tmp) + " / " + string(y_tmp)
 egen tileid = group(tilename)
 
 bysort fips: gen sumcounty = _N
+bysort fips device: gen tmp = (_n==1)
+bysort fips: egen sumcounty_device = sum(tmp)
 bysort fips: gen fips_flag = (_n == 1)
 
 bysort geoid10: gen summsa = _N
+bysort geoid10 device: replace tmp = (_n==1)
+bysort geoid10: egen summsa_device = sum(tmp)
 bysort geoid10: gen msa_flag = (_n == 1)
 
 bysort tileid: gen sumtile = _N
+bysort tileid device: replace tmp = (_n==1)
+bysort tileid: egen sumtile_device = sum(tmp)
 bysort tileid: gen tile_flag = (_n == 1)
 
 end
@@ -125,8 +142,49 @@ bysort geoid: egen numcounty = sum(fips_f)
 
 end
 
-program drop reg1
-program reg1
+program drop crossreg1
+program crossreg1
+
+est clear
+foreach x in "" "_d" {
+    eststo: poisson sumtile`x' treat area a2 pop p2 if tile_f == 1
+    estadd local blockfe "Yes", replace
+    estadd local monthfe "Yes", replace
+    estimates save "${myestimates}cross1`x'", replace
+}
+end
+
+program drop makecrosstable
+program makecrosstable
+
+est clear
+foreach x in "" "_d"{
+estimates use ${myestimates}cross1`x'
+eststo est1`x'
+}
+
+esttab using "${tables}cross1.tex", keep(treat) se ar2 nonotes star(* 0.10 ** 0.05 *** 0.01) coeflabels(Treat "Treat" _cons "Constant") mtitles("Num. Trips" "Num. Users") replace booktabs  s(blockfe monthfe N, label("Size Controls" "Population Controls")) width(0.75\hsize)
+
+end
+
+
+
+
+
+
+eststo: xtpoisson `x' 1.post#1.istreat i.month msadummy*, vce(robust) irr fe
+
+
+
+est clear
+eststo: poisson sumtile treat if tile_f == 1
+
+
+poisson sumtile_d treat if tile_f == 1
+poisson sumtile_d treat area a2 pop p2 if tile_f == 1
+
+
+
 
 tab treat if tile_f == 1
 
