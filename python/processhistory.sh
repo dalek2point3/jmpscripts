@@ -5,12 +5,15 @@
 
 ../osmconvert /media/data/rawdata/mainland-usa.osh.pbf --csv="@oname @id @lon @lat @version @timestamp @changeset @uid @user highway name amenity building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway gnis:feature_id gnis:fcode NHD:FCode addr:* import_uuid sidewalk " --csv-headline --add-bbox-tags --all-to-nodes --max-objects=1000000000 -B=/media/data/rawdata/poly/us-midwest.poly -o=/media/data/rawdata/us-midwest.csv
 
-echo "finished midwest"
 
-../osmconvert /media/data/rawdata/mainland-usa.osh.pbf --csv="@oname @id @lon @lat @version @timestamp @changeset @uid @user highway name amenity building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway gnis:feature_id gnis:fcode NHD:FCode addr:* import_uuid sidewalk " --csv-headline --add-bbox-tags --all-to-nodes --max-objects=1000000000 -B=/media/data/rawdata/poly/us-south.poly -o=/media/data/rawdata/us-south.csv
+# ../osmconvert /media/data/rawdata/mainland-usa.osh.pbf --csv="@oname @id @lon @lat @version @timestamp @changeset @uid @user highway name amenity building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway gnis:feature_id gnis:fcode NHD:FCode addr:* import_uuid sidewalk " --csv-headline --add-bbox-tags --all-to-nodes --max-objects=1000000000 -B=/media/data/rawdata/poly/us-midwest.poly -o=/media/data/rawdata/us-midwest.csv
 
-echo "finished south"
+# echo "finished midwest"
 
-../osmconvert /media/data/rawdata/mainland-usa.osh.pbf --csv="@oname @id @lon @lat @version @timestamp @changeset @uid @user highway name amenity building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway gnis:feature_id gnis:fcode NHD:FCode addr:* import_uuid sidewalk " --csv-headline --add-bbox-tags --all-to-nodes --max-objects=1000000000 -B=/media/data/rawdata/poly/us-west.poly -o=/media/data/rawdata/us-west.csv
+# ../osmconvert /media/data/rawdata/mainland-usa.osh.pbf --csv="@oname @id @lon @lat @version @timestamp @changeset @uid @user highway name amenity building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway gnis:feature_id gnis:fcode NHD:FCode addr:* import_uuid sidewalk " --csv-headline --add-bbox-tags --all-to-nodes --max-objects=1000000000 -B=/media/data/rawdata/poly/us-south.poly -o=/media/data/rawdata/us-south.csv
 
-echo "finished west"
+# echo "finished south"
+
+# ../osmconvert /media/data/rawdata/mainland-usa.osh.pbf --csv="@oname @id @lon @lat @version @timestamp @changeset @uid @user highway name amenity building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway gnis:feature_id gnis:fcode NHD:FCode addr:* import_uuid sidewalk " --csv-headline --add-bbox-tags --all-to-nodes --max-objects=1000000000 -B=/media/data/rawdata/poly/us-west.poly -o=/media/data/rawdata/us-west.csv
+
+# echo "finished west"
