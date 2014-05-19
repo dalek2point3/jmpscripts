@@ -16,13 +16,17 @@ cd `path'
 ********************************************
 
 insheet using ${rawosm}ne_final_head.csv, clear
+
 insheet using ${rawosm}ne_final_sed.csv, clear
+insheet using ${rawosm}splitfinal/ne_final_x01.csv, clear
 
 renamevar
 
 keepvar
 
 gennewvar
+
+
 
 //// programlib
 
@@ -32,21 +36,10 @@ program gennewvar
 egen tileid = group(tilename)
 maketimevar timestamp
 
-local list "amenity gnisfcode gnisfeatureid place leisure"
-
-
-   
-foreach x in `list'{
-    bysort month tileid: gen
-}
-
-
-
+bysort month tileid: gen sumamenity = _N
+bysort month tileid: gen tag = (_n==1)
 
 end
-
-
-
 
 
 program drop maketimevar
@@ -86,8 +79,6 @@ foreach x in `keeplist' {
 drop if keeptag == 0
 drop keeptag
 
-drop otype id lon lat lon_tmp lat_tmp x_tmp y_tmp mergevar import_uuid
-
 replace amenity = leisure if leisure != ""  & amenity == ""
 replace amenity = place if place != "" & amenity == ""
 
@@ -97,6 +88,7 @@ drop isgnis gnisf*
 
 drop if amenity == ""
 
+drop otype lon lat lon_tmp lat_tmp x_tmp y_tmp mergevar import_uuid building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway nhdfcode addr sidewalk 
 
 end
 
