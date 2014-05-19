@@ -24,14 +24,55 @@ keepvar
 
 gennewvar
 
-
 //// programlib
+
+program drop gennewvar
+program gennewvar
+
+egen tileid = group(tilename)
+maketimevar timestamp
+
+local list "amenity gnisfcode gnisfeatureid place leisure"
+
+
+   
+foreach x in `list'{
+    bysort month tileid: gen
+}
+
+
+
+
+end
+
+
+
+
+
+program drop maketimevar
+program maketimevar
+
+gen tstamp_stata = clock(`1', "YMD#hms#")
+format tstamp_stata %tc
+
+gen tstamp_date = dofc(tstamp_stata)
+format tstamp_date %td
+
+gen month = mofd(tstamp_date)
+format month %tm
+
+end
+
+
+
 program drop keepvar
 program keepvar
 
 // drop non US
 drop if fips == "NA" & geoid10 == "NA" 
 drop if otype == "v1"
+
+drop if import_uuid != ""
 
 gen keeptag = 0
 
@@ -44,6 +85,18 @@ foreach x in `keeplist' {
 
 drop if keeptag == 0
 drop keeptag
+
+drop otype id lon lat lon_tmp lat_tmp x_tmp y_tmp mergevar import_uuid
+
+replace amenity = leisure if leisure != ""  & amenity == ""
+replace amenity = place if place != "" & amenity == ""
+
+gen isgnis = ((gnisfeat != "") | (gnisfc != "")) & version == "1"
+drop if isgnis == 1
+drop isgnis gnisf*
+
+drop if amenity == ""
+
 
 end
 
