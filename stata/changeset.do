@@ -20,33 +20,90 @@ cd `path'
     // 3. merge with tile descriptions
     // 4. perform diff in diff
 
-// step 0
+
+// step 0 : prepare county lookup
 insheet using ${rawmaps}county_lookup.csv, clear
 drop state_fips cnty_fips 
 destring, replace
 save ${rawmaps}county_lookup, replace
 
-// step 1
+// step 1: prepare changes data 
 insheet using ${osmchange}change-pp.csv, clear
 processvar
 save ${stash}change-tile, replace
 
-// step 2
+// step 2 : merge changed with county
 use ${stash}change-tile, clear
 merge m:1 fips using ${rawmaps}county_lookup, keep(match) nogen
 save ${stash}change-tile-merge, replace
 
-// step 3
+// step 3 : create vars for analysis and collapse
 use ${stash}change-tile-merge, clear
 makenewvar
-
 bysort tileid month: drop if _n > 1
 save ${stash}change-group, replace
+
+// step 4: fill dataset
+use ${stash}change-group, clear
+filldataset
+save ${stash}change-fill, replace
+
+// step 5: perform analyses
+use ${stash}change-fill, clear
+
+
 
 
 
 //////////////////////
 /// programs
+
+program drop filldataset
+program filldataset
+
+sort tileno month
+tsset tileno month
+tsfill, full
+
+bysort tileno: egen treaty = max(treat)
+bysort tileno: egen tilepop = max(population)
+bysort tileno: egen msaid = max(geoid10)
+
+bysort msaid tileno: gen mtag = (_n==1)
+bysort msaid: egen msapop = total(tilepop*tag)
+
+/* gsort msaid -msaname */
+/* bysort msaid: gen msaname2 = msaname[1] */
+/* drop msaname */
+/* rename msaname2 msaname */
+
+replace numchange = 0 if numchange == .
+replace numuser = 0 if numuser == .
+replace numserioususer = 0 if numserioususer == .
+replace numnewuser = 0 if numnewuser == .
+replace numuser3 = 0 if numuser3 == .
+replace numuser12  = 0 if numuser12 == .
+replace numsmallchange1  = 0 if numsmallchange1 == .
+replace numsmallchange2  = 0 if numsmallchange2 == .
+replace numsmallchange10  = 0 if numsmallchange10 == .
+
+gen post =  month > mofd(date("10-1-2007","MDY"))
+gen istreat = (treaty > .1)
+gen istreat5 = (treaty > .5)
+
+xtset tileno month
+
+drop nummonth
+
+save ${stash}temp2, replace
+
+use ${stash}temp2, clear
+keep tileno msaid month msaid num* post istreat tileid
+
+end
+
+
+
 
 program drop makenewvar
 program makenewvar
@@ -80,6 +137,9 @@ bysort tileid month: egen numserioususer = total(tmp2)
 bysort tileid month: egen numnewuser = total(firstc)
 bysort tileid month: egen numuser3 = total(tmp5)
 bysort tileid month: egen numuser12 = total(tmp6)
+
+bysort tileno: egen totuser = total(numuser)
+bysort tileno: gen tag = (_n==1)
 
 drop tmp* firstc minmonth small*
 

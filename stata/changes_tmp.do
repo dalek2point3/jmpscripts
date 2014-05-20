@@ -16,9 +16,7 @@ cd `path'
 ********************************************
 
 insheet using ${rawosm}ne_final_head.csv, clear
-
 insheet using ${rawosm}ne_final_sed.csv, clear
-insheet using ${rawosm}splitfinal/ne_final_x01.csv, clear
 
 renamevar
 
@@ -26,26 +24,15 @@ keepvar
 
 gennewvar
 
-
-
 //// programlib
 
 program drop gennewvar
 program gennewvar
 
 egen tileid = group(tilename)
-maketimevar timestamp
 
-bysort month tileid: gen sumamenity = _N
-bysort month tileid: gen tag = (_n==1)
-
-end
-
-
-program drop maketimevar
-program maketimevar
-
-gen tstamp_stata = clock(`1', "YMD#hms#")
+// make time vars
+gen tstamp_stata = clock(tstamp, "YMD#hms#")
 format tstamp_stata %tc
 
 gen tstamp_date = dofc(tstamp_stata)
@@ -54,7 +41,12 @@ format tstamp_date %td
 gen month = mofd(tstamp_date)
 format month %tm
 
+
 end
+
+
+
+
 
 program drop keepvar
 program keepvar
@@ -62,8 +54,6 @@ program keepvar
 // drop non US
 drop if fips == "NA" & geoid10 == "NA" 
 drop if otype == "v1"
-
-drop if import_uuid != ""
 
 gen keeptag = 0
 
@@ -77,16 +67,7 @@ foreach x in `keeplist' {
 drop if keeptag == 0
 drop keeptag
 
-replace amenity = leisure if leisure != ""  & amenity == ""
-replace amenity = place if place != "" & amenity == ""
-
-gen isgnis = ((gnisfeat != "") | (gnisfc != "")) & version == "1"
-drop if isgnis == 1
-drop isgnis gnisf*
-
-drop if amenity == ""
-
-drop otype lon lat lon_tmp lat_tmp x_tmp y_tmp mergevar import_uuid building waterway natural oneway maxspeed place leisure foot access wheelchair cycleway nhdfcode addr sidewalk 
+drop otype id lon lat lon_tmp lat_tmp x_tmp y_tmp mergevar
 
 end
 
