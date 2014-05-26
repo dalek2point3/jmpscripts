@@ -12,6 +12,7 @@ from datetime import timedelta
 def writefile(outfile, line):
     line = [x.replace('"','').strip() for x in line]
     line = [x.replace("'","").strip() for x in line]
+    line = [x.replace("\t","").strip() for x in line]
 
     outfile.write("\t".join(line).encode("utf-8") + "\n")
 
@@ -25,7 +26,7 @@ def parseFile(changesetFile, bbox):
 
         print "Parsing started"
 
-        line = ["id","uid","created_at","min_lat","max_lat","min_lon","max_lon","closed_at", "open", "num_changes", "user"]
+        line = ["id","uid","created_at","min_lat","max_lat","min_lon","max_lon","closed_at", "open", "num_changes", "user", "lat", "lon"]
         writefile(outfile, line)
 
         for action, elem in context:
@@ -51,6 +52,8 @@ def parseFile(changesetFile, bbox):
 
             if (point_lon > bbox[0] and point_lon < bbox[2]):
                 if(point_lat > bbox[1] and point_lat < bbox[3]):
+                    line.append(str(point_lat))
+                    line.append(str(point_lon))
                     writefile(outfile, line)
 
             if((parsedCount % 100000) == 0):
