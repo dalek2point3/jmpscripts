@@ -1,7 +1,7 @@
 clear
 set more off
 set matsize 11000
-global path "/mnt/nfs6/wikipedia.proj/jmp/"
+global path "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/"
 global rawosm "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/"
 global osmchange "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmchange/"
 global rawmaps "/mnt/nfs6/wikipedia.proj/jmp/rawdata/maps/"
@@ -9,6 +9,7 @@ global rawtrips "/mnt/nfs6/wikipedia.proj/jmp/rawdata/trips/"
 global stash "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/"
 global myestimates "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/estimates/"
 global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
+
 cd ${path}
 
 // steps
@@ -17,132 +18,61 @@ cd ${path}
     // 3. merge with tile descriptions
     // 4. perform diff in diff
 
-// 0.1 clean changeset data
-insheet using ${osmchange}changesets-geocoded.csv, clear
-renamevar
-cleanvar
-droplargeuser
-save ${stash}cleanchangeset1, replace
 
-// 0.2 clean Urban Area (UA) data
-import excel ${rawmaps}ua_list_all.xls, clear firstrow
-cleanua
-save ${stash}cleanua, replace
+program drop _all
 
-// 0.3 clean County data
-insheet using ${rawmaps}CO-EST2012-Alldata.csv, clear
-cleancnty
-save ${stash}cleancnty, replace
+// STEP 0 -- clean 3 datasets (change, msa, county)
+preparebasic
 
-// 0.4 clean my county color data
-insheet using ${rawmaps}county_lookup.csv, clear
-keep fips color treat
-save ${stash}cleancountylookup, replace
+// STEP 1.1 - merge clean with msa / county
 
+use ${stash}cleanchangeset1, clear
 
+drop if fips == "NA"
+
+merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
+
+merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
+
+save ${stash}mergemaster1, replace
 
 
 // PROGRAMS
-program drop cleancnty
-program cleancnty
-
-// TODO: add income, race, poverty information
-// layout: http://www.census.gov/popest/data/counties/totals/2012/files/CO-EST2012-alldata.pdf
-
-// this drops all the states
-drop if sumlev == 40
-
-gen str5 fips = string(state, "%02.0f") + string(county, "%03.0f")
-rename census2010 cntypop
-rename ctyname cntyname
-
-keep fips region division state county stname cntyname cntypop
-
-end
 
 
-program drop cleanua
-program cleanua
-// see here for descriptions:
-// http://www.census.gov/geo/reference/ua/ualists_layout.html
-
-// UACE and geoid10 are the same thing
-rename UACE geoid10
-rename NAME uaname
-rename POP uapop
-rename HU uahu
-rename AREALANDSQMI uaarealand
-rename POPDEN uapopden
-gen uaclustertype = "area" if LSADC == "75"
-replace uaclustertype = "cluster" if LSADC == "76"
-drop AREA* LSADC
-end
+/// 1. program lib for merge data
 
 
-program drop droplargeuser
-program droplargeuser
-// drop large users
-// TODO: make this process more systematic?
-drop if user == "DaveHansenTiger"
-drop if user == "woodpeck_fixbot"
-drop if user == "woodpeck_repair"
-drop if user == "nmixter"
-drop if user == "jumbanho"
-drop if user == "-"
-drop if user == "balrog-kun"
-drop if user == "jremillard-massgis"
-drop if user == "pnorman_mechanical"
-drop if user == "CanvecImports"
-drop if user == "TIGERcnl"
-drop if user == "canvec_fsteggink"
-drop if num_changes > 40000
-end
 
 
-program drop renamevar
-program renamevar
-rename v1 changesetid
-rename v2 uid
-rename v3 created_at
-rename v4 min_lat
-rename v5 max_lat
-rename v6 min_lon
-rename v7 max_lon
-rename v8 closed_at
-rename v9 open
-rename v10 num_changes
-rename v11 user
-rename v12 lat
-rename v13 lon
-rename v14 fips
-rename v15 geoid10
-end
 
-program drop cleanvar
-program cleanvar
 
-gen tstamp = clock(created_at, "YMD#hms#")
-format tstamp %tc
 
-gen tstamp_date = dofc(tstamp)
-format tstamp_date %td
-
-gen month = mofd(tstamp_date)
-format month %tm
-
-drop if abs(min_lat - max_lat) > 1
-drop if abs(min_lon - max_lon) > 1
-
-// drop non-US changesets
-drop if fips == "NA" & geoid != "NA"
-
-drop open closed_at created_at min_* max_* 
-
-end
 
 
 /////////////////////
 // scratch
+
+// quick analysis
+
+use ${stash}mergemaster1, clear
+
+drop if geoid10 == "NA"
+
+bysort month fips: gen sumcontrib = _N
+bysort month fips: gen tag = (_n==1)
+drop if tag == 0
+
+gen post =  month > mofd(date("10-1-2007","MDY"))
+gen cutoff = month > mofd(date("10-1-2010","MDY"))
+
+destring fips, gen(fipsid)
+
+xtset fipsid month
+
+xtpoisson sumcontrib post##treat i.month, vce(robust) fe
+
+
 
 // identify imports
 
