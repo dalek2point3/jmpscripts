@@ -3,8 +3,6 @@ OpenStreetMap Scripts
 
 This Repo contains scripts for processing OpenStreetMap files
 
+## Processing Changeset Files
 
-* This is a test point
-* And another
-
-The results are available in a nice reproducible format.
+1. download changesets from : http://planet.openstreetmap.org/planet/changesets-latest.osm.bz2

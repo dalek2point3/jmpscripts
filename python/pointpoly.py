@@ -25,15 +25,14 @@ lyr_cty = ds_cty.GetLayer(0)
 index_cty = lyr_cty.GetLayerDefn().GetFieldIndex("fips")
 
 ## msa
-filename_msa = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/msa.shp'
 filename_msa = '/mnt/nfs6/wikipedia.proj/osm/rawdata/usa/cb_2012_us_uac10_500k.shp'
 drv_msa = ogr.GetDriverByName('ESRI Shapefile')
 ds_msa = drv_msa.Open(filename_msa)
 lyr_msa = ds_msa.GetLayer(0)
 index_msa = lyr_msa.GetLayerDefn().GetFieldIndex("GEOID10")
 
-#print len(lyr_cty), index_cty
-#print len(lyr_msa), index_msa
+print len(lyr_cty), index_cty
+print len(lyr_msa), index_msa
 ##
 
 def check(lon, lat, mode):
@@ -63,23 +62,32 @@ def writelog(logfileh, data):
     logfileh.write(data + "\n")
 
 def geocode(line):
+    
+    # latid = 'v3'
+    # lonid = 'v4'
+
+    latid = 'lat'
+    lonid = 'lon'
 
     try:
-        pt_lon = float(line['v3']) ## v3 --> lon
-        pt_lat = float(line['v4']) ## v4 --> lat
+        ## TODO: let this not be hardcoded to line format
+        pt_lon = float(line[lonid]) ## v3 --> lon
+        pt_lat = float(line[latid]) ## v4 --> lat
     except ValueError:
         return line
 
-    if line['fips'] == '' :
-        line['fips']= check(pt_lon, pt_lat, "cty")
-    if line['geoid10'] == '' :
-        line['geoid10']= check(pt_lon, pt_lat, "msa")
+    line['fips']= check(pt_lon, pt_lat, "cty")
+    line['geoid10']= check(pt_lon, pt_lat, "msa")
+
     return line
+
+    # if line['fips'] == '' :
+    # if line['geoid10'] == '' :
 
 
 def main(pointfile, outfilestub, startflag=0, step=10):
 
-    startflag = (startflag-1) * 100000
+    startflag = (startflag-1) * 10000
     outfile = outfilestub + "_" + str(startflag) + "-" + str(startflag+step) + ".csv"
     count = startflag 
     logfile = outfilestub + "_" + str(startflag) + "-" + str(startflag+step) + ".log"
@@ -90,6 +98,8 @@ def main(pointfile, outfilestub, startflag=0, step=10):
 
         csvreader = csv.DictReader(infileh, delimiter = "\t")
         fields = csvreader.fieldnames
+        fields.append('fips')
+        fields.append('geoid10')
 
         for _ in xrange(startflag):
             next(csvreader)
@@ -101,10 +111,10 @@ def main(pointfile, outfilestub, startflag=0, step=10):
                 count += 1
                 if count < startflag + step:
 
-                    if line['class'] == "both":
-                        pass
-                    else:
-                        line = geocode(line)
+                    # if line['class'] == "both":
+                    #    pass
+                    # else:
+                    line = geocode(line)
 
                     if (count % 1000) == 0:
                         stop = timeit.default_timer()
@@ -127,19 +137,26 @@ if __name__ == "__main__":
 
     ## this is where you set your input and output files. 
     ## use the other script in this package to convert changesets to csv
-    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/x_tmp.csv"
+    ## pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/x_tmp.csv"
+    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmchange/changesets-may26-usa.csv"
 
     # specify start and end points here.
     startflag = int(sys.argv[1].strip())
     step = int(sys.argv[2].strip())
     region = sys.argv[3].strip()
 
-    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/x_"+region+".csv"
+    # pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/x_"+region+".csv"
 
+    region = "change"
     print "starting at:" + str(datetime.now())
 
     # testing output file
     outfilestub = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/" + region
+
+    # setup envt
+    os.system("source /mnt/nfs6/wikipedia.proj/gdalvenv/bin/activate")
+    os.system("export LD_LIBRARY_PATH=/mnt/nfs6/wikipedia.proj/gdalvenv/lib:$LD_LIBRARY_PATH")
+
 
     main(pointfile, outfilestub, startflag, step)    
 
