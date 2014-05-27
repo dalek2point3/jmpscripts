@@ -34,16 +34,38 @@ insheet using ${rawmaps}CO-EST2012-Alldata.csv, clear
 cleancnty
 save ${stash}cleancnty, replace
 
+// 0.4 clean my county color data
+insheet using ${rawmaps}county_lookup.csv, clear
+keep fips color treat
+save ${stash}cleancountylookup, replace
 
 
 
 
 // PROGRAMS
+program drop cleancnty
+program cleancnty
+
+// TODO: add income, race, poverty information
+// layout: http://www.census.gov/popest/data/counties/totals/2012/files/CO-EST2012-alldata.pdf
+
+// this drops all the states
+drop if sumlev == 40
+
+gen str5 fips = string(state, "%02.0f") + string(county, "%03.0f")
+rename census2010 cntypop
+rename ctyname cntyname
+
+keep fips region division state county stname cntyname cntypop
+
+end
+
 
 program drop cleanua
 program cleanua
 // see here for descriptions:
 // http://www.census.gov/geo/reference/ua/ualists_layout.html
+
 // UACE and geoid10 are the same thing
 rename UACE geoid10
 rename NAME uaname
@@ -136,7 +158,7 @@ outsheet lat lon using ${stash}tmp.csv if user == "DaveHansenTiger", replace
 
 
 //////////////// OLD /////
-
+/////////////////////////////////////////////////
 
 
 
