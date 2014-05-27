@@ -17,28 +17,63 @@ cd ${path}
     // 3. merge with tile descriptions
     // 4. perform diff in diff
 
-
+// 0.1 clean changeset data
 insheet using ${osmchange}changesets-geocoded.csv, clear
 renamevar
 cleanvar
+droplargeuser
+save ${stash}cleanchangeset1, replace
 
+// 0.2 clean Urban Area (UA) data
+import excel ${rawmaps}ua_list_all.xls, clear firstrow
+cleanua
+save ${stash}cleanua, replace
 
-outsheet lat lon using ${stash}tmp.csv if user == "DaveHansenTiger", replace
+// 0.3 clean County data
+insheet using ${rawmaps}CO-EST2012-Alldata.csv, clear
+cleancnty
+save ${stash}cleancnty, replace
 
 
 
 
 
 // PROGRAMS
+
+program drop cleanua
+program cleanua
+// see here for descriptions:
+// http://www.census.gov/geo/reference/ua/ualists_layout.html
+// UACE and geoid10 are the same thing
+rename UACE geoid10
+rename NAME uaname
+rename POP uapop
+rename HU uahu
+rename AREALANDSQMI uaarealand
+rename POPDEN uapopden
+gen uaclustertype = "area" if LSADC == "75"
+replace uaclustertype = "cluster" if LSADC == "76"
+drop AREA* LSADC
+end
+
+
 program drop droplargeuser
 program droplargeuser
 // drop large users
+// TODO: make this process more systematic?
 drop if user == "DaveHansenTiger"
 drop if user == "woodpeck_fixbot"
 drop if user == "woodpeck_repair"
 drop if user == "nmixter"
 drop if user == "jumbanho"
-
+drop if user == "-"
+drop if user == "balrog-kun"
+drop if user == "jremillard-massgis"
+drop if user == "pnorman_mechanical"
+drop if user == "CanvecImports"
+drop if user == "TIGERcnl"
+drop if user == "canvec_fsteggink"
+drop if num_changes > 40000
 end
 
 
@@ -96,6 +131,8 @@ gen percentimport = userimports / useredits
 
 tabstat percent if percent > 0.5 & useredits > 50, by(user) stats(mean n)
 
+// outsheet something useful
+outsheet lat lon using ${stash}tmp.csv if user == "DaveHansenTiger", replace
 
 
 //////////////// OLD /////
