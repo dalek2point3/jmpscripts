@@ -28,11 +28,16 @@ preparebasic
 // STEP 1.1 - merge clean with msa / county
 mergebasic
 
-// STEP 1.2 -- collapse and fill data
+// STEP 1.2 -- make new vars, collapse and fill data
 
 use ${stash}mergemaster1, clear
 
 makedv fips
+
+
+
+// TOMORROW May 28: check DVs, collapse and fill for FIPS
+
 
 // what more do I need?
 
@@ -82,10 +87,38 @@ end
 // scratch
 
 // check dv calculation
+// all vars OK
+
+label variable numuser "Number of Unique Users in Unit/Month"
+label variable numcontrib "Contribs in Unit/Month"
+
+label variable numserious90 "Num of Top 90 Users (lifetime contribs) in Unit/Month"
+label variable numserious95 "Num of Top 95 Users (lifetime contribs) in Unit/Month"
+
+label variable numnewusers "Number of Users making their first ever contrib in Unit/Month"
+label variable numnewusers6 "Number of Users joining who will stay in this unit for 6 months or more"
+
+label variable numnewusers90 "Number of users joining who will go on to become super contribs"
+
+label variable nummonth "Number of months in given unit"
+label variable numusercontrib "Number of lifetime contribs"
+
+// testing
 
 bysort fips month: gen tmp = (_n==1)
 sort fips month
-list fips month numcontrib numuser if fips == "08059" & tmp==1 & istag == 1
+gen istag = .
+format minmonth %tm
+
+local testvar "numnewusers90"
+codebook fips if `testvar' != 0
+local fip "06073"
+codebook month if fips == "`fip'" & `testvar' == 1
+
+replace istag = (month == mofd(date("7-1-2013","MDY")))
+
+gen tmp2 = (month == minmonth)
+list tmp2 user numnewusers `testvar' numuserc if fips == "`fip'" & istag == 1, sepby(tmp2)
 
 
 list month user numcontrib numuser numserious* if fips == "22089" & istag == 1
@@ -95,14 +128,9 @@ sort fips mont user
 format minm %tm
 list user tmp1 numuserc numnew* minm if fips == "`fip'" & istag == 1
 
-local fip "13059"
-gen istag = .
-replace istag = (month == mofd(date("10-1-2011","MDY")))
 
 codebook numnew if tmp ==1
 
-codebook fips if numnew == 1
-codebook month if fips == "13059" & numnew == 2
 
 // quick analysis
 
