@@ -3,6 +3,9 @@ program makedv
 // unit = fips, geoid10 or tileid
 local unit `0'
 
+drop if `unit' == "NA"
+drop if `unit' == ""
+
 // useful vars
 bysort uid: gen numusercontrib = _N
 bysort uid: egen minmonth = min(month)
