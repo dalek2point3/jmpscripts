@@ -22,10 +22,43 @@ cd ${path}
 program drop _all
 
 // STEP 0 -- clean 3 datasets (change, msa, county)
+// TODO: add tileid logic
 preparebasic
 
 // STEP 1.1 - merge clean with msa / county
+mergebasic
 
+// STEP 1.2 -- collapse and fill data
+
+use ${stash}mergemaster1, clear
+
+makedv fips
+
+// what more do I need?
+
+** Data Stage 3
+// collapse data at diff levels and then expand
+// store these datasets
+
+** Analysis Stage 0
+// summary stats
+// basic means graph
+
+** Analysis Stage 1
+// diff in diff, DD chart --> users, super users, contribs
+// at MSA, County, Tile level
+
+
+** Analysis Stage 2
+// 
+
+
+
+
+// PROGRAMS
+
+/// 1. program lib for merge data
+program mergebasic
 use ${stash}cleanchangeset1, clear
 
 drop if fips == "NA"
@@ -35,12 +68,7 @@ merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
 merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
 
 save ${stash}mergemaster1, replace
-
-
-// PROGRAMS
-
-
-/// 1. program lib for merge data
+end
 
 
 
@@ -53,9 +81,36 @@ save ${stash}mergemaster1, replace
 /////////////////////
 // scratch
 
+// check dv calculation
+
+bysort fips month: gen tmp = (_n==1)
+sort fips month
+list fips month numcontrib numuser if fips == "08059" & tmp==1 & istag == 1
+
+
+list month user numcontrib numuser numserious* if fips == "22089" & istag == 1
+
+sort fips mont user
+
+format minm %tm
+list user tmp1 numuserc numnew* minm if fips == "`fip'" & istag == 1
+
+local fip "13059"
+gen istag = .
+replace istag = (month == mofd(date("10-1-2011","MDY")))
+
+codebook numnew if tmp ==1
+
+codebook fips if numnew == 1
+codebook month if fips == "13059" & numnew == 2
+
 // quick analysis
 
 use ${stash}mergemaster1, clear
+
+unique user if post == 0
+unique fips if post == 0
+unique geoid10 if post == 0
 
 drop if geoid10 == "NA"
 
@@ -71,6 +126,8 @@ destring fips, gen(fipsid)
 xtset fipsid month
 
 xtpoisson sumcontrib post##treat i.month, vce(robust) fe
+
+xtpoisson numnewusers6 post##treat i.month if cutoff == 1, vce(robust) fe
 
 
 
@@ -187,10 +244,7 @@ bysort userid: gen totalc = _N
 bysort tileid month userid : gen tmp1 = (_n==1)
 bysort tileid month userid : gen tmp2 = (_n==1)*(totalc >= 10)
 
-bysort tileid userid month: gen tmp4 = (_n==1)
-bysort tileid userid: egen nummonth = total(tmp4)
 bysort tileid month userid : gen tmp5 = (_n==1)*(nummonth >= 3)
-bysort tileid month userid : gen tmp6 = (_n==1)*(nummonth >= 12)
 
 bysort userid tileid month: gen tmp3 = (_n==1)
 bysort userid tileid: egen minmonth = min(month)
@@ -208,7 +262,13 @@ bysort tileid month: egen numuser = total(tmp1)
 bysort tileid month: egen numserioususer = total(tmp2)
 bysort tileid month: egen numnewuser = total(firstc)
 bysort tileid month: egen numuser3 = total(tmp5)
+
+
+bysort tileid userid month: gen tmp4 = (_n==1)
+bysort tileid userid: egen nummonth = total(tmp4)
+bysort tileid month userid : gen tmp6 = (_n==1)*(nummonth >= 12)
 bysort tileid month: egen numuser12 = total(tmp6)
+
 
 bysort tileno: egen totuser = total(numuser)
 bysort tileno: gen tag = (_n==1)
