@@ -32,7 +32,12 @@ mergebasic
 
 use ${stash}mergemaster1, clear
 
+// this creates outcome variables
 makedv fips
+
+// this fills in blanks and xtsets the data
+balancepanel fips
+
 
 
 
