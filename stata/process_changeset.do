@@ -54,21 +54,23 @@ use ${stash}panelfips, clear
 makesummary
 
 // make population histogram
-program drop _all
-use ${stash}panelfips, clear
-
 makehist cntypop kdensity
 makehist region hist
-
-
-
-
-
 
 ** Analysis Stage 1
 // basic means graph
 // diff in diff, DD chart --> users, super users, contribs
 // at MSA, County, Tile level
+
+// meantable
+
+makemeanline numcontrib quarter 2011 "Contributions"
+makemeanline numuser quarter 2011 "Users"
+makemeanline numserious90 quarter 2011 "Super Users"
+makemeanline numnewusers quarter 2011 "New Users"
+makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
+makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
+
 
 
 ** Analysis Stage 2
@@ -87,6 +89,40 @@ makehist region hist
 
 /////////////////////
 // scratch
+
+
+// analyze quarter effects
+
+
+
+
+
+// address selection into TIGER
+
+bysort fips: gen tag = (_n==1)
+
+gen tmp = cntypop / 1000000
+
+
+
+makedv geoid10
+balancepanel geoid10
+save ${stash}panelgeoid, replace
+
+use ${stash}panelgeoid, clear
+
+bysort geoid: gen tmp = _n==1
+
+reg treat uapop i.state if tmp == 1
+
+ttest uapop uahu uaarea uapopden if tmp == 1, by(treat)
+
+gen lnpop = ln(uapop)
+
+ttest lnpop if tmp == 1, by(treat)
+
+
+
 
 // precontrib analysis
 

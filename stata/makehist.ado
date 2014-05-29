@@ -24,6 +24,8 @@ gen lnvar = ln(var)
 twoway (kdensity lnvar if treat==1) (kdensity lnvar if treat==0), title(Population Distribution) legend(order(1 "TIGER Counties" 2 "Control Counties")) ytitle("")
 
 graph export ${tables}kdens_cnty.eps, replace
+shell epstopdf ${tables}kdens_cnty.eps
+
 end
 
 
@@ -39,6 +41,7 @@ label values lnvar divisionl
 twoway (hist lnvar if treat==1, discrete color(green) barwidth(0.8)) (hist lnvar if treat==0, discrete fcolor(none) lcolor(black) barwidth(0.8)), title(Regional Distribution) legend(order(1 "TIGER Counties" 2 "Control Counties")) ytitle("") xlabel(1/4, valuelabel noticks) xtitle("") 
 
 graph export ${tables}hist_cnty.eps, replace
+shell epstopdf ${tables}hist_cnty.eps
 
 ** division hist
 
@@ -49,6 +52,7 @@ label values division division2
 twoway (hist division if treat==1, discrete color(green) barwidth(0.8)) (hist division if treat==0, discrete fcolor(none) lcolor(black) barwidth(0.8)), title(Regional Distribution) legend(order(1 "TIGER Counties" 2 "Control Counties")) ytitle("") xlabel(1/9, valuelabel noticks labsize(tiny)) xtitle("") 
 
 graph export ${tables}hist_cnty_div.eps, replace
+shell epstopdf ${tables}hist_cnty_div.eps
 
 end
 
