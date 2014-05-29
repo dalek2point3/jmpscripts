@@ -54,7 +54,14 @@ use ${stash}panelfips, clear
 makesummary
 
 // make population histogram
-makehist
+program drop _all
+use ${stash}panelfips, clear
+
+makehist cntypop kdensity
+makehist region hist
+
+
+
 
 
 
