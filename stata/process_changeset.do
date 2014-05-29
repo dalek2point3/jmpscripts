@@ -1,4 +1,4 @@
-clear
+clear all
 set more off
 set matsize 11000
 global path "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/"
@@ -28,33 +28,36 @@ preparebasic
 // STEP 1.1 - merge clean with msa / county
 mergebasic
 
-// STEP 1.2 -- make new vars, collapse and fill data
-
 use ${stash}mergemaster1, clear
 
-// this creates outcome variables
+// Step 1.2 -- create outcome variables
 makedv fips
 
-// this fills in blanks and xtsets the data
+// Step 1.3 -- fills in blanks and xtset the data
 balancepanel fips
 
-
-
-
-// TOMORROW May 28: check DVs, collapse and fill for FIPS
-
+save ${stash}panelfips, replace
 
 // what more do I need?
 
-** Data Stage 3
-// collapse data at diff levels and then expand
-// store these datasets
-
 ** Analysis Stage 0
 // summary stats
-// basic means graph
+// convince that we have a good experiment
+
+// 1. summary stats
+// 2. histograms (population, division) TODO: more covars
+// 3. ttests
+
+use ${stash}panelfips, clear
+
+// this makes basic summary stats table
+makesummary
+
+
+
 
 ** Analysis Stage 1
+// basic means graph
 // diff in diff, DD chart --> users, super users, contribs
 // at MSA, County, Tile level
 
@@ -85,11 +88,44 @@ end
 
 
 
-
-
-
 /////////////////////
 // scratch
+
+// precontrib analysis
+
+
+gen post =  month > mofd(date("10-1-2007","MDY"))
+
+drop prec
+bysort fips post: egen precontrib = total(numcon)
+replace precontrib = -1 if post == 1
+
+tab stname if prec > 0
+
+unique fips if precontrib > 0
+codebook precontrib if prec > 0
+
+
+// quick analysis
+
+use ${stash}panelfips, clear
+
+gen post =  month > mofd(date("10-1-2007","MDY"))
+gen cutoff =  month > mofd(date("10-1-2009","MDY"))
+
+
+xtpoisson numcontrib 1.post 1.post#1.treat i.month if cntypop , vce(robust) fe
+
+xtpoisson numcontrib 1.post 1.post#1.treat i.month if cutoff == 0, vce(robust) fe
+
+xtpoisson numuser 1.post 1.post#1.treat i.month if cutoff == 0, vce(robust) fe
+
+xtpoisson numuser 1.post 1.post#1.treat i.month, vce(robust) fe
+
+xtpoisson numnewusers 1.post 1.post#1.treat i.month, vce(robust) fe
+
+
+
 
 // check dv calculation
 // all vars OK

@@ -17,6 +17,10 @@ save ${stash}cleanua, replace
 // 0.3.1 clean my county color data
 // TODO: doublecheck the color data
 insheet using ${rawmaps}county_lookup.csv, clear
+// TODO: calculate area
+// TODO: match to census data from
+// http://www.census.gov/support/USACdataDownloads.html#PEN
+
 keep fips color treat
 gen str5 fips2 = string(fips, "%05.0f")
 drop fips
@@ -78,6 +82,8 @@ drop if user == "pnorman_mechanical"
 drop if user == "CanvecImports"
 drop if user == "TIGERcnl"
 drop if user == "canvec_fsteggink"
+drop if user == "OSMF Redaction Account"
+drop if user == "bot-mode"
 drop if num_changes > 40000
 end
 
