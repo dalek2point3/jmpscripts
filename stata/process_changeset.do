@@ -63,7 +63,6 @@ makehist region hist
 // at MSA, County, Tile level
 
 // meantable
-
 makemeanline numcontrib quarter 2011 "Contributions"
 makemeanline numuser quarter 2011 "Users"
 makemeanline numserious90 quarter 2011 "Super Users"
