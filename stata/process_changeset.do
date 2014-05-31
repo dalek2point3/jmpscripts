@@ -62,7 +62,7 @@ makehist region hist
 // diff in diff, DD chart --> users, super users, contribs
 // at MSA, County, Tile level
 
-// meantable
+// 1.1 Mean Charts
 makemeanline numcontrib quarter 2011 "Contributions"
 makemeanline numuser quarter 2011 "Users"
 makemeanline numserious90 quarter 2011 "Super Users"
@@ -70,6 +70,14 @@ makemeanline numnewusers quarter 2011 "New Users"
 makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
 makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 
+// 1.2 Produce Diff in diff Latex tables
+local dv "numcontrib numuser numnewusers numnewusers6 numnewusers90 numserious90"
+
+diffindiff xtreg "`dv'" 
+diffindiff xtpoisson "`dv'"
+
+// 1.3 Produce Diff in diff Pictures
+ddchart
 
 
 ** Analysis Stage 2
