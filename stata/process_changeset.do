@@ -31,12 +31,19 @@ mergebasic
 use ${stash}mergemaster1, clear
 
 // Step 1.2 -- create outcome variables
-makedv fips
-
 // Step 1.3 -- fills in blanks and xtset the data
-balancepanel fips
 
+// for fips
+use ${stash}mergemaster1, clear
+makedv fips
+balancepanel fips
 save ${stash}panelfips, replace
+
+// for geoid10
+use ${stash}mergemaster1, clear
+makedv geoid10
+balancepanel geoid10
+save ${stash}panelgeoid10, replace
 
 // what more do I need?
 
@@ -73,11 +80,20 @@ makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 // 1.2 Produce Diff in diff Latex tables
 local dv "numcontrib numuser numnewusers numnewusers6 numnewusers90 numserious90"
 
-diffindiff xtreg "`dv'" 
-diffindiff xtpoisson "`dv'"
+program drop _all
+
+diffindiff xtreg "`dv'" fips
+diffindiff xtpoisson "`dv'" fips
+
+diffindiff xtreg "`dv'" geoid10
+diffindiff xtpoisson "`dv'" geoid10
 
 // 1.3 Produce Diff in diff Pictures
 ddchart
+
+// 1.4 Robust: product diff in diff for GEOID
+
+use ${stash}panelgeoid10, clear
 
 
 ** Analysis Stage 2
