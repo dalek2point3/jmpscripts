@@ -1,8 +1,7 @@
 program balancepanel
 
-local unit `0'
-
-destring `unit', gen(unitid)
+* local unit `0'
+* destring `unit', gen(unitid)
 
 bysort unitid month: drop if _n > 1
 

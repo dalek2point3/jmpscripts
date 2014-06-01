@@ -41,9 +41,9 @@ save ${stash}panelfips, replace
 
 // for geoid10
 use ${stash}mergemaster1, clear
-makedv geoid10
+makedv "fips geoid10"
 balancepanel geoid10
-save ${stash}panelgeoid10, replace
+save ${stash}panelfips_geoid10, replace
 
 // what more do I need?
 
@@ -79,21 +79,29 @@ makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 
 // 1.2 Produce Diff in diff Latex tables
 local dv "numcontrib numuser numnewusers numnewusers6 numnewusers90 numserious90"
+local dv "numcontrib"
 
 program drop _all
+
+use ${stash}panelfips, clear
 
 diffindiff xtreg "`dv'" fips
 diffindiff xtpoisson "`dv'" fips
 
-diffindiff xtreg "`dv'" geoid10
-diffindiff xtpoisson "`dv'" geoid10
+use ${stash}panelfips_geoid10, clear
+drop if geoid10 == "NA"
+
+diffindiff xtreg "`dv'" fips_geoid10
+diffindiff xtpoisson "`dv'" fips_geoid10
+
 
 // 1.3 Produce Diff in diff Pictures
 ddchart
 
+
 // 1.4 Robust: product diff in diff for GEOID
 
-use ${stash}panelgeoid10, clear
+use ${stash}panelfips_geoid10, clear
 
 
 ** Analysis Stage 2

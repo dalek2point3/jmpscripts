@@ -1,10 +1,21 @@
 program makedv
 
-// unit = fips, geoid10 or tileid
-local unit `0'
+use ${stash}mergemaster1, clear
 
-drop if `unit' == "NA"
-drop if `unit' == ""
+// unit = fips, geoid10 or tileid
+
+local unit `0'
+* local unit "fips geoid10"
+
+egen unitid = group(`unit')
+genvar unitid
+
+end
+
+
+program genvar
+
+local unit `1'
 
 // useful vars
 bysort uid: gen numusercontrib = _N
@@ -50,3 +61,9 @@ bysort `unit' month: egen numnewusers90 = total(tmp1)
 drop tmp1
 
 end
+
+// testing
+
+bysort geoid: egen avgtreat = mean(treat)
+
+codebook uaname if avg > 0 & avg < 1

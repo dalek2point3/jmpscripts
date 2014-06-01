@@ -2,8 +2,8 @@
 program makesummary
 label variable treat "1(TIGER)"
 label variable cntypop "Population"
-label variable numcontrib "Contributions / Month"
-label variable numuser "Users / Month"
+label variable numcontrib "Contributions"
+label variable numuser "Users"
 label variable numserious90 "Serious Users / Month"
 label variable numnewusers "New Users / Month"
 
