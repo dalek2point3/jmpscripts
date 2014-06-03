@@ -7,7 +7,8 @@ local cutoff `4'
 local mode `5'
 
 di "OK, you asked me to generate DD charts"
-di "for `model', unit: `unit', DVs: `dv', mode: `mode', cutoff: `cutoff'"
+di "for `model', unit: `unit', DVs: `dv', mode: `mode'"
+di "cutoff: `cutoff'"
 
 if "`mode'" == "run"{
     drop if year > `cutoff'
@@ -60,12 +61,11 @@ eststo est`x'
 end
 
 
-
 program writereg
 
 local filename `1'
 
-esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("Contrib" "Users" "New Users" "New Users(6+)" "New Super Users" "Super Users") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
+esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("Contrib" "Chngs" "Users" "New U" "New U(6+)" "New Super U" "Super Users") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
 
 end
 

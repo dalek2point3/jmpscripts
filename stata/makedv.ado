@@ -5,7 +5,7 @@ use ${stash}mergemaster1, clear
 // unit = fips, geoid10 or tileid
 
 local unit `0'
-local unit "geoid10"
+* local unit "geoid10"
 
 drop if `unit' == "NA"
 
@@ -13,7 +13,6 @@ egen unitid = group(`unit')
 genvar unitid
 
 end
-
 
 program genvar
 

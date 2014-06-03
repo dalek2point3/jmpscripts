@@ -10,7 +10,7 @@ use ${stash}panelfips, clear
 
 gen quarter = qofd(dofm(month))
 format quarter %tq
-gen year = yofd(dofm(month))
+* gen year = yofd(dofm(month))
 
 local var `1'
 local time `2'

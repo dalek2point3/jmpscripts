@@ -16,7 +16,7 @@ tsset unitid month
 tsfill, full
 
 ** fill in zeros if missing DVs are present
-local outcomes "numcontrib numserious90 numnewusers numnewusers90 numuser numserious95  numnewusers6"
+local outcomes "numcontrib numserious90 numnewusers numnewusers90 numuser numserious95  numnewusers6 numchanges"
 
 foreach x in `outcomes'{
     replace `x' = 0 if `x' == .
