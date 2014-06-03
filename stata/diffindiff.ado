@@ -9,12 +9,6 @@ local mode `5'
 di "OK, you asked me to generate DD charts"
 di "for `model', unit: `unit', DVs: `dv', mode: `mode', cutoff: `cutoff'"
 
-//testing
-* local model xtpoisson
-* local dv numuser
-* local unit geoid10
-//
-   
 if "`mode'" == "run"{
     drop if year > `cutoff'
     runreg `model' "`dv'" `unit' `cutoff'
@@ -25,6 +19,26 @@ if "`mode'" == "write"{
     writereg `model'_`unit'_`cutoff'
 }
 
+end
+
+program runreg
+local model `1'
+local dv `2'
+local unit `3'
+local cutoff `4'
+
+est clear
+di "-----"
+di "  Running `model' for `dv'"
+di "-----"
+foreach x in `dv'{
+di "now processing `x'"
+local command "`model' `x' 1.treat#1.post i.month, fe vce(robust)"
+di "`command'"
+`model' `x' 1.treat#1.post i.month, fe vce(robust)
+esttab, keep(1.treat#1.post) p
+estimates save ${myestimates}`model'_`x'_`cutoff'_`unit', replace
+}
 end
 
 program loadreg
@@ -46,25 +60,6 @@ eststo est`x'
 end
 
 
-program runreg
-local model `1'
-local dv `2'
-local unit `3'
-local cutoff `4'
-
-est clear
-di "-----"
-di "  Running `model' for `dv'"
-di "-----"
-foreach x in `dv'{
-di "now processing `x'"
-local command "`model' `x' 1.treat#1.post i.month, fe vce(robust)"
-di "`command'"
-`model' `x' 1.treat#1.post i.month, fe vce(robust)
-esttab, keep(1.treat#1.post) p
-estimates save ${myestimates}`model'_`x'_`cutoff'_`unit', replace
-}
-end
 
 program writereg
 
