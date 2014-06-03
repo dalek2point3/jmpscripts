@@ -23,7 +23,7 @@ foreach x in `outcomes'{
 }
 
 ** fill in the covariates
-local covars "fips geoid10 region division state county stname cntyname cntypop color treat uaname uapop uahu uaarea uapopden uaclus year post"
+local covars "fips geoid10 region division state county stname cntyname cntypop color treat uaname uapop uahu uaarea uapopden uaclus"
 
 foreach x in `covars'{
     gsort unitid month
@@ -35,6 +35,10 @@ foreach x in `covars'{
     di "finished `x'"
     di "---"
 }
+
+// generate new vars
+gen post =  month > mofd(date("10-1-2007","MDY"))
+gen year = year(dofm(month))
 
 gsort unitid month
 xtset unitid month

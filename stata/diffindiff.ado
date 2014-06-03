@@ -7,7 +7,7 @@ local cutoff `4'
 local mode `5'
 
 di "OK, you asked me to generate DD charts"
-di "for `model', unit: `unit', DVs: `dv', mode: `mode'"
+di "for `model', unit: `unit', DVs: `dv', mode: `mode', cutoff: `cutoff'"
 
 //testing
 * local model xtpoisson
@@ -15,17 +15,13 @@ di "for `model', unit: `unit', DVs: `dv', mode: `mode'"
 * local unit geoid10
 //
    
-* use ${stash}panel`unit', clear
-* use ${stash}panel`unit', clear
-* gen post =  month > mofd(date("10-1-2007","MDY"))
-
 if "`mode'" == "run"{
     drop if year > `cutoff'
-    runreg `model' "`dv'" `unit'
+    runreg `model' "`dv'" `unit' `cutoff'
 }
 
 if "`mode'" == "write"{
-    loadreg `model' "`dv'" `unit'
+    loadreg `model' "`dv'" `unit' `cutoff'
     writereg `model'_`unit'_`cutoff'
 }
 
@@ -62,6 +58,8 @@ di "  Running `model' for `dv'"
 di "-----"
 foreach x in `dv'{
 di "now processing `x'"
+local command "`model' `x' 1.treat#1.post i.month, fe vce(robust)"
+di "`command'"
 `model' `x' 1.treat#1.post i.month, fe vce(robust)
 esttab, keep(1.treat#1.post) p
 estimates save ${myestimates}`model'_`x'_`cutoff'_`unit', replace
