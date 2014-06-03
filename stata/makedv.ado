@@ -5,7 +5,9 @@ use ${stash}mergemaster1, clear
 // unit = fips, geoid10 or tileid
 
 local unit `0'
-* local unit "fips geoid10"
+local unit "geoid10"
+
+drop if `unit' == "NA"
 
 egen unitid = group(`unit')
 genvar unitid
@@ -27,6 +29,7 @@ drop tmp1
 
 // a) contribs
 bysort `unit' month: gen numcontrib = _N
+bysort `unit' month: egen numchanges = total(num_change)
 
 // b) users
 bysort `unit' month uid: gen tmp1 = (_n==1)
@@ -62,8 +65,3 @@ drop tmp1
 
 end
 
-// testing
-
-bysort geoid: egen avgtreat = mean(treat)
-
-codebook uaname if avg > 0 & avg < 1
