@@ -3,9 +3,11 @@ program diffindiff
 local model `1'
 local dv `2'
 local unit `3'
+local cutoff `4'
+local mode `5'
 
 di "OK, you asked me to generate DD charts"
-di "for `model', unit: `unit', and DVs: `dv'"
+di "for `model', unit: `unit', DVs: `dv', mode: `mode'"
 
 //testing
 * local model xtpoisson
@@ -15,12 +17,17 @@ di "for `model', unit: `unit', and DVs: `dv'"
    
 * use ${stash}panel`unit', clear
 * use ${stash}panel`unit', clear
- 
-gen post =  month > mofd(date("10-1-2007","MDY"))
+* gen post =  month > mofd(date("10-1-2007","MDY"))
 
-runreg `model' "`dv'" `unit'
-loadreg `model' "`dv'" `unit'
-writereg `model'_`unit'
+if "`mode'" == "run"{
+    drop if year > `cutoff'
+    runreg `model' "`dv'" `unit'
+}
+
+if "`mode'" == "write"{
+    loadreg `model' "`dv'" `unit'
+    writereg `model'_`unit'_`cutoff'
+}
 
 end
 
@@ -46,6 +53,7 @@ program runreg
 local model `1'
 local dv `2'
 local unit `3'
+local cutoff `4'
 
 est clear
 di "-----"
@@ -55,7 +63,7 @@ foreach x in `dv'{
 di "now processing `x'"
 `model' `x' 1.treat#1.post i.month, fe vce(robust)
 esttab, keep(1.treat#1.post) p
-estimates save ${myestimates}`model'_`x'_2014_`unit', replace
+estimates save ${myestimates}`model'_`x'_`cutoff'_`unit', replace
 }
 end
 

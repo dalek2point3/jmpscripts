@@ -2,3 +2,7 @@ python/logs/
 python/*.sh.o*
 stata/*~*
 *~*
+tools
+stata/stata.*
+stata/*.log
+*#*

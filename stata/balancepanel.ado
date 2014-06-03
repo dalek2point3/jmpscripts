@@ -23,7 +23,7 @@ foreach x in `outcomes'{
 }
 
 ** fill in the covariates
-local covars "fips geoid10 region division state county stname cntyname cntypop color treat uaname uapop uahu uaarea uapopden uaclus"
+local covars "fips geoid10 region division state county stname cntyname cntypop color treat uaname uapop uahu uaarea uapopden uaclus year post"
 
 foreach x in `covars'{
     gsort unitid month
