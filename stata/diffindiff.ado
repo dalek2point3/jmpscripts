@@ -36,12 +36,13 @@ program loadreg
 local model `1'
 local dv `2'
 local unit `3'
+local cutoff `4'
 
 di "storing estimates from `model' for `dv' (`unit')"
 
 est clear
 foreach x in `dv'{
-estimates use ${myestimates}`model'_`x'_2014_`unit'
+estimates use ${myestimates}`model'_`x'_`cutoff'_`unit'
 estadd local unitfe "Yes", replace
 estadd local monthfe "Yes", replace
 eststo est`x'

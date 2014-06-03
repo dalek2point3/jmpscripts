@@ -28,8 +28,6 @@ preparebasic
 // STEP 1.1 - merge clean with msa / county
 mergebasic
 
-use ${stash}mergemaster1, clear
-
 // Step 1.2 -- create outcome variables
 // Step 1.3 -- fills in blanks and xtset the data
 
@@ -78,21 +76,19 @@ makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
 makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 
 // 1.2 Produce Diff in diff Latex tables
-local dv "numcontrib numuser numnewusers numnewusers6 numnewusers90 numserious90"
-local dv "numcontrib"
 
-program drop _all
 
-use ${stash}panelfips, clear
 
-diffindiff xtreg "`dv'" fips
-diffindiff xtpoisson "`dv'" fips
 
-use ${stash}panelfips_geoid10, clear
-drop if geoid10 == "NA"
 
-diffindiff xtreg "`dv'" fips_geoid10
-diffindiff xtpoisson "`dv'" fips_geoid10
+
+
+
+// TODOs for Monday Jun 2
+// TILEID diff in diff
+// What happened to previous people?
+// What happened at the street/amenity level?
+
 
 
 // 1.3 Produce Diff in diff Pictures
@@ -121,11 +117,73 @@ use ${stash}panelfips_geoid10, clear
 /////////////////////
 // scratch
 
+// dd tables
+
+program drop _all
+
+
+local dv "numcontrib numuser numnewusers numnewusers6 numnewusers90 numserious90"
+
+foreach x in `dv'{
+   shell ./batchreg.sh panelfips xtpoisson `x' fips 2011 run
+}
+
+
+diffindiff xtpoisson "`dv'" fips 2011 write
+diffindiff xtpoisson "`dv'" fips 2012 write
+diffindiff xtpoisson "`dv'" fips 2013 write
+diffindiff xtpoisson "`dv'" fips 2014 write
+
+
+
+
+
+local dv "numcontrib"
+
+
+use ${stash}panelfips, clear
+
+diffindiff xtreg "`dv'" fips
+diffindiff xtpoisson "`dv'" fips
+
+use ${stash}panelfips_geoid10, clear
+drop if geoid10 == "NA"
+bysort geoid10: egen ismix = mean(treat)
+drop if ismix == 0
+drop if ismix == 1
+
+diffindiff xtpoisson "`dv'" fips_geoid10_mix
+
+use ${stash}panelfips_geoid10, clear
+drop if geoid10 == "NA"
+
+diffindiff xtpoisson "`dv'" fips_geoid10
+
+local dv "numcontrib numuser numnewusers numnewusers90 numserious90"
+
+local dv "numcontrib numuser numnewusers numnewusers6 numnewusers90 numserious90"
+
+
+
+local dv "numcontrib"
+
+diffindiff xtpoisson "numnewusers6" fips 2014 run
+
+xtreg "numnewusers6" fips 2012 run
+
+diffindiff xtpoisson "`dv'" fips 2012 write
+
+diffindiff xtpoisson "`dv'" fips 2013 write
+
+
+program drop _all
+
+use ${stash}panelfips, clear
+
+
+
 
 // analyze quarter effects
-
-
-
 
 
 // address selection into TIGER
