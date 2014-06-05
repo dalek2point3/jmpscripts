@@ -15,9 +15,14 @@ if "`mode'" == "run"{
     runreg `model' "`dv'" `unit' `cutoff'
 }
 
-if "`mode'" == "write"{
+if "`mode'" == "write" & "`unit'" != "uid"{
     loadreg `model' "`dv'" `unit' `cutoff'
     writereg `model'_`unit'_`cutoff'
+}
+
+if "`mode'" == "write" & "`unit'" == "uid"{
+    loadreg `model' "`dv'" `unit' `cutoff'
+    writereguid `model'_`unit'_`cutoff'
 }
 
 end
@@ -28,15 +33,22 @@ local dv `2'
 local unit `3'
 local cutoff `4'
 
+local factor "1.treat"
+
+if "`unit'" == "geoid10"{
+    local factor "c.treat"
+}
+
+
 est clear
 di "-----"
 di "  Running `model' for `dv'"
 di "-----"
 foreach x in `dv'{
 di "now processing `x'"
-local command "`model' `x' 1.treat#1.post i.month, fe vce(robust)"
+local command "`model' `x' `factor'#1.post i.month, fe vce(robust)"
 di "`command'"
-`model' `x' 1.treat#1.post i.month, fe vce(robust)
+`model' `x' `factor'#1.post i.month, fe vce(robust)
 esttab, keep(1.treat#1.post) p
 estimates save ${myestimates}`model'_`x'_`cutoff'_`unit', replace
 }
@@ -66,6 +78,14 @@ program writereg
 local filename `1'
 
 esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("Contrib" "Chngs" "Users" "New U" "New U(6+)" "New Super U" "Super Users") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
+
+end
+
+program writereguid
+
+local filename `1'
+di "processing uid"
+esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("Contrib" "Home County" "Home State" "Other Counties" "Treat" "No Treat" "Number of Counties") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
 
 end
 

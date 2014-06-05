@@ -1,12 +1,13 @@
 program balancepanel
 
-* local unit `0'
+* local unit uid
+local unit `0'
 * destring `unit', gen(unitid)
 
 bysort unitid month: drop if _n > 1
 
 // clean user level vars
-drop change uid num_c user lat lon tstamp* minmonth nummonth numusercontrib 
+drop change uid num_c lat lon tstamp* minmonth nummonth numusercontrib 
 
 // fill in zeros
 tsset unitid month
@@ -44,3 +45,4 @@ gsort unitid month
 xtset unitid month
 
 end
+

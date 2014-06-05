@@ -1,11 +1,11 @@
 program makedv
 
-use ${stash}mergemaster1, clear
+* use ${stash}mergemaster1, clear
 
 // unit = fips, geoid10 or tileid
 
 local unit `0'
-* local unit "geoid10"
+* local unit "uid"
 
 drop if `unit' == "NA"
 

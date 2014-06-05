@@ -1,4 +1,3 @@
-
 program makeperson
 use ${stash}mergemaster1, clear
 
@@ -6,6 +5,7 @@ gen tmp = 1
 replace tmp = . if month > mofd(date("10-1-2007","MDY"))
 
 bysort uid: egen avgtreat = mean(treat*tmp)
+gen fipstreat = treat
 replace treat = avgtreat
 
 // drop lots of data
@@ -19,6 +19,7 @@ save ${stash}paneluid, replace
 
 end
 
+
 program genvar
 
 // unit of obs -- user-month
@@ -26,12 +27,22 @@ program genvar
 
 bysort uid month: gen numcontrib = _N
 sort uid month
+
 bysort uid: gen firstcounty = fips[1]
 gen ishomecounty = (fips == firstcounty)
 
+bysort uid: gen firststate = state[1]
+gen ishomestate = (state == firststate)
+
 bysort uid month: egen numcontrib_home = total(ishomecounty)
-bysort uid month: egen numcontrib_other = total(!ishomecounty)
-drop firstcounty ishomecounty
+bysort uid month: egen numcontrib_state = total(ishomestate & !ishomecounty)
+bysort uid month: egen numcontrib_other = total(!ishomecounty & !ishomestate)
+
+bysort uid month: egen numcontrib_notreat = total(!ishomecounty & !fipstreat)
+
+bysort uid month: egen numcontrib_treat = total(!ishomecounty & fipstreat)
+
+drop first* is*
 
 bysort uid month fips: gen tmp = (_n==1)
 bysort uid month: egen numcounties = total(tmp)
@@ -56,7 +67,7 @@ tsset unitid month
 tsfill, full
 
 ** fill in zeros if missing DVs are present
-local outcomes "numcontrib numcontrib_home numcontrib_other numcounties"
+local outcomes "numcontrib numcontrib_home numcontrib_state numcontrib_other numcontrib_treat numcontrib_notreat numcounties"
 
 foreach x in `outcomes'{
     replace `x' = 0 if `x' == .
@@ -82,5 +93,13 @@ gen year = year(dofm(month))
 
 gsort unitid month
 xtset unitid month
+
+end
+
+
+program runreg
+
+diffindiff `model' `dv' `unit' `cutoff' `mode'
+
 
 end
