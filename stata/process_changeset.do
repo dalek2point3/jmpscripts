@@ -37,11 +37,31 @@ makedv fips
 balancepanel fips
 save ${stash}panelfips, replace
 
-// for geoid10
+// for geoid10-fips
 use ${stash}mergemaster1, clear
 makedv "fips geoid10"
 balancepanel geoid10
 save ${stash}panelfips_geoid10, replace
+
+// just geoid
+use ${stash}mergemaster1, clear
+
+drop if geoid10 == "NA"
+
+bysort geoid10 fips: gen tmp = _n==1
+gen treattmp = treat
+replace treattmp = . if tmp == 0
+bysort geoid10: egen avgtreat = mean(treattmp)
+replace treat = avgtreat
+drop treattmp tmp avgtreat
+
+makedv "geoid10"
+balancepanel geoid10
+save ${stash}panelgeoid10, replace
+
+// person level
+makeperson
+
 
 // what more do I need?
 
@@ -63,11 +83,9 @@ makehist cntypop kdensity
 makehist region hist
 
 ** Analysis Stage 1
-// basic means graph
-// diff in diff, DD chart --> users, super users, contribs
-// at MSA, County, Tile level
 
 // 1.1 Mean Charts
+makemeanline numchanges quarter 2011 "Changes"
 makemeanline numcontrib quarter 2011 "Contributions"
 makemeanline numuser quarter 2011 "Users"
 makemeanline numserious90 quarter 2011 "Super Users"
@@ -76,23 +94,34 @@ makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
 makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 
 // 1.2 Produce Diff in diff Latex tables
+// rundd -> batchreg.sh -> runreg.do -> diffindiff.ado
+program drop _all
 
-
-
-
-
-
-
-
-// TODOs for Monday Jun 2
-// TILEID diff in diff
-// What happened to previous people?
-// What happened at the street/amenity level?
-
-
+// TODO: fix manual process
+// have to do this manually
+rundd panelgeoid10
 
 // 1.3 Produce Diff in diff Pictures
 ddchart
+
+** person level regressions
+
+// GEOID Level
+
+
+// TASKS for tomorrow
+
+
+
+
+// TODOs for Tuesday Jun 3
+// GEOID dataset
+// TILEID diff in diff
+// What happened to previous people?
+// What happened at the street/amenity level?
+// Urban vs Rural (framework for third level diff)
+
+
 
 
 // 1.4 Robust: product diff in diff for GEOID
@@ -118,23 +147,6 @@ use ${stash}panelfips_geoid10, clear
 // scratch
 
 // dd tables
-
-program drop _all
-
-
-local dv "numcontrib numuser numnewusers numnewusers6 numnewusers90 numserious90"
-
-foreach x in `dv'{
-   shell ./batchreg.sh panelfips xtpoisson `x' fips 2011 run
-}
-
-
-diffindiff xtpoisson "`dv'" fips 2011 write
-diffindiff xtpoisson "`dv'" fips 2012 write
-diffindiff xtpoisson "`dv'" fips 2013 write
-diffindiff xtpoisson "`dv'" fips 2014 write
-
-
 
 
 
