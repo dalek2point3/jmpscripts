@@ -15,6 +15,8 @@ drop tmp avgtreat
 genvar
 balance
 
+replace treat = (treat > 0.2)
+
 save ${stash}paneluid, replace
 
 end
@@ -28,6 +30,9 @@ program genvar
 bysort uid month: gen numcontrib = _N
 sort uid month
 
+sort uid month
+bysort uid: gen firstmonth = month[1]
+
 bysort uid: gen firstcounty = fips[1]
 gen ishomecounty = (fips == firstcounty)
 
@@ -40,9 +45,11 @@ bysort uid month: egen numcontrib_other = total(!ishomecounty & !ishomestate)
 
 bysort uid month: egen numcontrib_notreat = total(!ishomecounty & !fipstreat)
 
+bysort uid month: egen numcontrib_statenotreat = total(!ishomecounty & !fipstreat & ishomestate)
+
 bysort uid month: egen numcontrib_treat = total(!ishomecounty & fipstreat)
 
-drop first* is*
+drop firstc* firsts* is*
 
 bysort uid month fips: gen tmp = (_n==1)
 bysort uid month: egen numcounties = total(tmp)
@@ -67,14 +74,14 @@ tsset unitid month
 tsfill, full
 
 ** fill in zeros if missing DVs are present
-local outcomes "numcontrib numcontrib_home numcontrib_state numcontrib_other numcontrib_treat numcontrib_notreat numcounties"
+local outcomes "numcontrib numcontrib_home numcontrib_state numcontrib_other numcontrib_treat numcontrib_notreat numcontrib_statenotreat numcounties"
 
 foreach x in `outcomes'{
     replace `x' = 0 if `x' == .
 }
 
 ** fill in the covariates
-local covars "user treat"
+local covars "user treat firstmonth"
 
 foreach x in `covars'{
     gsort unitid month

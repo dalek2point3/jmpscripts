@@ -85,7 +85,7 @@ program writereguid
 
 local filename `1'
 di "processing uid"
-esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("Contrib" "Home County" "Home State" "Other Counties" "Treat" "No Treat" "Number of Counties") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
+esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("Contrib" "Home County" "TIGER" "NO TIGER" "State (No TIGER)" "Number of Counties") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
 
 end
 
