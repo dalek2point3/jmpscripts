@@ -26,6 +26,32 @@ log using logs/ddlog_`dv'_`cutoff', text replace
 
 use ${stash}`datafile', clear
 
+** droppre
+
 diffindiff `model' `dv' `unit' `cutoff' `mode'
 
 log close
+
+* testing
+* local datafile panelfips
+* local model xtpoisson
+* local dv numcontrib
+* local unit fipsbig
+* local cutoff 2014
+* local mode run
+
+program droppre
+
+local unit fips
+local var contrib
+
+bysort `unit': egen tot`var' = total(num`var')
+bysort `unit' post: egen totpost`var' = total(num`var'*(1-post))
+bysort `unit': egen totpre`var' = max(totpost`var')
+drop totpost`var'
+
+codebook fips if totpre`var' > 0
+keep if totpre`var' > 10
+
+end
+

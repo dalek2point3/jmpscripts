@@ -23,19 +23,10 @@ program drop _all
 
 // STEP 0 -- clean 3 datasets (change, msa, county)
 // TODO: add tileid logic
-preparebasic
-
-// STEP 1.1 - merge clean with msa / county
-mergebasic
 
 // Step 1.2 -- create outcome variables
 // Step 1.3 -- fills in blanks and xtset the data
 
-// for fips
-use ${stash}mergemaster1, clear
-makedv fips
-balancepanel fips
-save ${stash}panelfips, replace
 
 // for geoid10-fips
 use ${stash}mergemaster1, clear
@@ -52,40 +43,13 @@ replace treattmp = . if tmp == 0
 bysort geoid10: egen avgtreat = mean(treattmp)
 replace treat = avgtreat
 drop treattmp tmp avgtreat
-
 makedv "geoid10"
 balancepanel geoid10
 save ${stash}panelgeoid10, replace
 
-// what more do I need?
-
-** Analysis Stage 0
-// summary stats
-// convince that we have a good experiment
-
-// 1. summary stats
-// 2. histograms (population, division) TODO: more covars
-// 3. ttests
-
-use ${stash}panelfips, clear
-
-// this makes basic summary stats table
-makesummary
-
-// make population histogram
-makehist cntypop kdensity
-makehist region hist
-
-** Analysis Stage 1
+** Analysis 
 
 // 1.1 Mean Charts
-makemeanline numchanges quarter 2011 "Changes"
-makemeanline numcontrib quarter 2011 "Contributions"
-makemeanline numuser quarter 2011 "Users"
-makemeanline numserious90 quarter 2011 "Super Users"
-makemeanline numnewusers quarter 2011 "New Users"
-makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
-makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 
 // 1.2 Produce Diff in diff Latex tables
 // rundd -> batchreg.sh -> runreg.do -> diffindiff.ado
@@ -93,9 +57,6 @@ program drop _all
 
 // TODO: fix manual process
 // have to do this manually
-rundd panelgeoid10
-
-
 
 // 1.3 Produce Diff in diff Pictures
 ddchart
@@ -107,22 +68,67 @@ ddperson maketables
 ddperson makechart
 
 
+// 0. Data
+
+// 0.1 preprep
+preparebasic
+mergebasic
+
+// 0.2 make fips dataset
+use ${stash}mergemaster1, clear
+makedv fips
+balancepanel fips
+save ${stash}panelfips, replace
+
+
 // Analysis
 
 // 1. Summary stats
+use ${stash}panelfips, clear
+makesummary
 
 // 2. Treatment vs. control charts
+use ${stash}panelfips, clear
+makehist cntypop kdensity
+makehist region hist
 
 // 3. Baseline effects (xtpoisson, cluster at unit level)
 
-//  0. Meanline charts (raw data) 
+//  3.1 Meanline charts (raw data) 
+makemeanline numchanges quarter 2011 "Changes"
+makemeanline numcontrib quarter 2011 "Contributions"
+makemeanline numuser quarter 2011 "Users"
+makemeanline numserious90 quarter 2011 "Super Users"
+makemeanline numnewusers quarter 2011 "New Users"
+makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
+makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 
-// outcomes vars: County Sample -- DD Main Specification
+// 3.2 FIPS Sample -- DD
 
-    // a. contribs, users, super users
-    // b. new users, newusers, newusers+
-    // c. street contribs, non street contribs, amenities
-    // d. completeness
+/// 3.2.1 -- contrib, users, superu
+program drop _all
+
+clear
+local dv "numcontrib numuser numserious90"
+local unit fips
+rundd panelfips `unit' "`dv'"
+diffindiff xtpoisson "`dv'" `unit' 2014 write tab_3.2.1 "Contributions" "Users" "Super Users"
+
+/// 3.2.2 -- newusers, newusers6, newuserssuper
+clear
+local dv "numnewusers numnewusers6 numnewusers90"
+local unit fips
+rundd panelfips `unit' "`dv'"
+diffindiff xtpoisson "`dv'" `unit' 2014 write tab_3.2.2 "New Users" "New Users(6+)" "New Super Users"
+
+/// 3.2.3 -- streetcontrib, nonstreet contrib, amenities
+// TODO
+
+/// 3.2.4 -- completeness
+// TODO
+
+
+// 3.3 Robustness : Drop empty counties
 
 //  e. Repeat (a) by dropping empty counties
 //  f. Repeat (a) by dropping west

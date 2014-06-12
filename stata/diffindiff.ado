@@ -5,10 +5,14 @@ local dv `2'
 local unit `3'
 local cutoff `4'
 local mode `5'
+local table `6'
+local t1 "`7'"
+local t2 "`8'"
+local t3 "`9'"
 
 di "OK, you asked me to generate DD charts"
 di "for `model', unit: `unit', DVs: `dv', mode: `mode'"
-di "cutoff: `cutoff'"
+di "cutoff: `cutoff', titles: `titles'"
 
 if "`mode'" == "run"{
     drop if year > `cutoff'
@@ -17,12 +21,12 @@ if "`mode'" == "run"{
 
 if "`mode'" == "write" & "`unit'" != "uid"{
     loadreg `model' "`dv'" `unit' `cutoff'
-    writereg `model'_`unit'_`cutoff'
+    writereg `model'_`unit'_`cutoff'_`table' "`t1'" "`t2'" "`t3'"
 }
 
 if "`mode'" == "write" & "`unit'" == "uid"{
     loadreg `model' "`dv'" `unit' `cutoff'
-    writereguid `model'_`unit'_`cutoff'
+    writereguid `model'_`unit'_`cutoff'_`table'
 }
 
 end
@@ -76,8 +80,13 @@ end
 program writereg
 
 local filename `1'
+local t1 "`2'"
+local t2 "`3'"
+local t3 "`4'"
 
-esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("Contrib" "Chngs" "Users" "New U" "New U(6+)" "New Super U" "Super Users") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
+di "Titles are: `t1' `t2' `t3'"
+
+esttab using "${tables}`filename'.tex", keep(1.treat#1.post) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat#1.post "Post X TIGER" _cons "Constant") mtitles("`t1'" "`t2'" "`t3'") replace booktabs  s(unitfe monthfe N, label("County FE" "Month FE"))
 
 end
 
