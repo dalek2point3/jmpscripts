@@ -73,7 +73,15 @@ def geocode(line):
         ## TODO: let this not be hardcoded to line format
         pt_lon = float(line[lonid]) ## v3 --> lon
         pt_lat = float(line[latid]) ## v4 --> lat
+
     except ValueError:
+        line['fips']= -999
+        line['geoid10']= -999
+        return line
+
+    except TypeError:
+        line['fips']= -888
+        line['geoid10']= -888
         return line
 
     line['fips']= check(pt_lon, pt_lat, "cty")
@@ -87,14 +95,14 @@ def geocode(line):
 
 def main(pointfile, outfilestub, startflag=0, step=10):
 
-    startflag = (startflag-1) * 10000
+    startflag = (startflag-1) * 100000
     outfile = outfilestub + "_" + str(startflag) + "-" + str(startflag+step) + ".csv"
     count = startflag 
     logfile = outfilestub + "_" + str(startflag) + "-" + str(startflag+step) + ".log"
     logfileh = open(logfile, "w")
     starttime = str(datetime.now())
 
-    with open(pointfile) as infileh:
+    with open(pointfile, 'rU') as infileh:
 
         csvreader = csv.DictReader(infileh, delimiter = "\t")
         fields = csvreader.fieldnames

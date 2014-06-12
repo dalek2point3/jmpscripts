@@ -59,7 +59,6 @@ program drop _all
 // have to do this manually
 
 // 1.3 Produce Diff in diff Pictures
-ddchart
 
 ** person level regressions
 // person level
@@ -127,9 +126,13 @@ diffindiff xtpoisson "`dv'" `unit' 2014 write tab_3.2.2 "New Users" "New Users(6
 /// 3.2.4 -- completeness
 // TODO
 
+// 3.2.5 -- Diff in Diff charts
+// TODO : make this more flexible
+// TODO : this works only for fips
+ddchart
 
 // 3.3 Robustness : Drop empty counties
-
+// TODO
 //  e. Repeat (a) by dropping empty counties
 //  f. Repeat (a) by dropping west
 //  g. Repeat (a) for Tile Sample, MSA sample
@@ -137,7 +140,6 @@ diffindiff xtpoisson "`dv'" `unit' 2014 write tab_3.2.2 "New Users" "New Users(6
 //  i. Repeat (a) with spatially clustered se, Region X Time trends
 
 // 4 Heterogenous Effects
-
 // a. engaged vs. non-engaged county
 // b. urban vs rural
 // c. university vs non university
