@@ -2,33 +2,26 @@ insheet using ${rawhist}node_gc.csv, clear
 
 renamevar
 cleanvar
+droplargeuser
 
 mergevar
 
-makedv fips
+count if addr == "NA" & amenity == "NA"
 
-// TODO: makevar
-// TODO: balancepanel
+tab user if place != "NA", sort
+
+save ${stash}mergemaster_node, replace
+
+program makenodevar
 
 
-xtpoisson numcontrib 1.treat#1.post i.month, fe vce(robust)
-
-xtpoisson numcontrib 1.treat#1.post i.month, fe vce(robust)
-
-xtpoisson numcontrib 1.treat#1.post i.year, fe vce(robust)
-
-xtpoisson numuser 1.treat#1.post i.month, fe vce(robust)
 
 
 program mergevar
 
 drop if fips == "NA"
-
 merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
-
 merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
-
-save ${stash}mergemaster_node, replace
 
 end
 
