@@ -9,78 +9,79 @@ global rawtrips "/mnt/nfs6/wikipedia.proj/jmp/rawdata/trips/"
 global stash "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/"
 global myestimates "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/estimates/"
 global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
+ global rawhist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmhistory/"
+
+adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
 
 cd ${path}
 
-// steps
-    // 1. changeset file (all changesets, lat, lon, user, time)
-    // 2. create the grid merge
-    // 3. merge with tile descriptions
-    // 4. perform diff in diff
-
-
 program drop _all
 
-// STEP 0 -- clean 3 datasets (change, msa, county)
-// TODO: add tileid logic
+ // STEP 0 -- clean 3 datasets (change, msa, county)
+ // TODO: add tileid logic
 
-// Step 1.2 -- create outcome variables
-// Step 1.3 -- fills in blanks and xtset the data
-
-
-// for geoid10-fips
-use ${stash}mergemaster1, clear
-makedv "fips geoid10"
-balancepanel geoid10
-save ${stash}panelfips_geoid10, replace
-
-// just geoid
-use ${stash}mergemaster1, clear
-drop if geoid10 == "NA"
-bysort geoid10 fips: gen tmp = _n==1
-gen treattmp = treat
-replace treattmp = . if tmp == 0
-bysort geoid10: egen avgtreat = mean(treattmp)
-replace treat = avgtreat
-drop treattmp tmp avgtreat
-makedv "geoid10"
-balancepanel geoid10
-save ${stash}panelgeoid10, replace
-
-** Analysis 
-
-// 1.1 Mean Charts
-
-// 1.2 Produce Diff in diff Latex tables
-// rundd -> batchreg.sh -> runreg.do -> diffindiff.ado
-program drop _all
-
-// TODO: fix manual process
-// have to do this manually
-
-// 1.3 Produce Diff in diff Pictures
-
-** person level regressions
-// person level
-makeperson
-ddperson maketables
-ddperson makechart
+ // Step 1.2 -- create outcome variables
+ // Step 1.3 -- fills in blanks and xtset the data
 
 
-// 0. Data
+ // for geoid10-fips
+ use ${stash}mergemaster1, clear
+ makedv "fips geoid10"
+ balancepanel geoid10
+ save ${stash}panelfips_geoid10, replace
 
-// 0.1 preprep
-preparebasic
-mergebasic
+ // just geoid
+ use ${stash}mergemaster1, clear
+ drop if geoid10 == "NA"
+ bysort geoid10 fips: gen tmp = _n==1
+ gen treattmp = treat
+ replace treattmp = . if tmp == 0
+ bysort geoid10: egen avgtreat = mean(treattmp)
+ replace treat = avgtreat
+ drop treattmp tmp avgtreat
+ makedv "geoid10"
+ balancepanel geoid10
+ save ${stash}panelgeoid10, replace
 
-// 0.2 make fips dataset
-use ${stash}mergemaster1, clear
-makedv fips
-balancepanel fips
-save ${stash}panelfips, replace
+ ** Analysis 
+
+ // 1.1 Mean Charts
+
+ // 1.2 Produce Diff in diff Latex tables
+ // rundd -> batchreg.sh -> runreg.do -> diffindiff.ado
+ program drop _all
+
+ // TODO: fix manual process
+ // have to do this manually
+
+ // 1.3 Produce Diff in diff Pictures
+
+ ** person level regressions
+ // person level
+ makeperson
+ ddperson maketables
+ ddperson makechart
 
 
-// Analysis
+ // 0. Data
+
+ // 0.1 preprep
+ preparebasic
+ mergebasic
+
+ // 0.2 make fips dataset
+ use ${stash}mergemaster1, clear
+ makedv fips
+ balancepanel fips
+ save ${stash}panelfips, replace
+
+
+ // Analysis
+
+
+    
+di "$S_ADO"
+di "`BASE'"
 
 // 1. Summary stats
 use ${stash}panelfips, clear
@@ -140,10 +141,23 @@ ddchart
 //  i. Repeat (a) with spatially clustered se, Region X Time trends
 
 // 4 Heterogenous Effects
-// a. engaged vs. non-engaged county
-// b. urban vs rural
-// c. university vs non university
-// d. rich vs poor
+
+// 1. Large vs. small
+
+use ${stash}panelfips, clear
+gen large = (cntypop > 100000)
+
+program drop _all
+
+diffindiff2 large LARGE tab_4.1 numco numuser numnewusers run
+
+diffindiff2 large LARGE tab_4.1 numco numuser numnewusers write
+
+
+// 1. engaged vs. non-engaged county
+// 2. urban vs rural
+// 3. university vs non university
+// 4. rich vs poor
 
 // 5 Person Level Regressions
 
