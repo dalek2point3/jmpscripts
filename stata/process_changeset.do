@@ -133,11 +133,15 @@ gen large = (cntypop > 100000)
 
 program drop _all
 
-diffindiff2 large LARGE tab_4.1 numcontrib numuser numnewusers run
+label variable numcontrib "Contrib"
+label variable numuser "Users"
+label variable numserious90 "Serious Users"
+label variable numnewusers "New Users"
+label variable numnewusers6 "New Users(6+)"
 
-diffindiff2 large LARGE tab_4.1 numcontrib numuser numserious90 run
+diffindiff2 large LARGE tab_4.1 run numcontrib numuser numserious90 numnewusers6
 
-diffindiff2 large LARGE tab_4.1 numco numuser numserious90 write
+diffindiff2 large LARGE tab_4.1 write numcontrib numuser numserious90 numnewusers6
 
 
 // 1. engaged vs. non-engaged county
