@@ -1,49 +1,5 @@
 ds
 list in 1
-list lat lon in 1/10
-ds
-list in1
-list in 1
-tab _m
-ls `stash'
-di `stash'
-di `rawosm'
-di "`rawosm'"
-list in 1
-count
-count
-list if _n == _N
-ds
-list in 1
-codebook tilename
-count
-tab cnty_fips, sort
-unique cnty_f
-ds
-drop tilename
-rename cnty_fips fips
-unique fips
-ds
-list in 1
-ds
-list in 1
-ds
-list in 1
-list in 
-list in 1
-list in 1
-ds
-list in 1
-tab _m
-tab class
-tab class, missing
-list in 1
-ds
-tab _merge
-ds
-list in 1
-ds
-list in 1
 list if _m == 3
 list if _m == 3 & _n < 122000
 tab class
@@ -104,5 +60,91 @@ ds
 list in 1
 tab v42
 tab v42, missing
+clear
+exit
+tab highway, sort
+tab amenity, sort
+ds
+codebook gnisfc gnisfeat if amenity != ""
+ds
+codebook lon_tmp
+codebook tilename
+d
+ds
+tab class
+ds
+ds
+ds
+list in 1
+tab month
+ds
+drop tstamp* month
+ds
+tab month
+ds
+tab leisure
+tab leisure, sort
+tab amenity if leisure == "par" 
+tab amenity if leisure == "park" 
+tab foot
+tab access
+tab place
+tab foot
+tab wheelchair
+tab cycleway
+tab addr
+tab sidewalk
+tab import_
+ds
+tab import_u
+tab addr
+tab place
+ds
+tab isgn
+list if isgn == 1
+tab user if isg == 1
+tab user if isg == 1, sort
+tab isgnis
+tab user if isgnis == 1
+tab user if isgnis == 1, missing
+tab version
+tab version, missing
+tab version, sort
+tab version if isgnis == 1, sort
+drop isg
+tab isgnis
+tab user if isgn == 1
+tab user if isgn == 1, sort
+count
+count if amenity == ""
+tab version
+list if version  == 20
+list if version  == "20"
+ds
+ds
+codebook nhdf
+drop tileid month tstamp_ suma 
+drop tileid month tstamp_* suma 
+count
+list in 1
+ds
+list in 1
+clear
+ds
+list in 1
+ds
+list in 1
+count if amenity != "'
+count if amenity != ""
+count
+count if highway != ""
+tab highway, missing
+tab highway, missing sort
+tab amenity, sort
+list in 1
+tab user, sort
+codebook maxspeed
+tab oneway
+ds
 clear
 exit

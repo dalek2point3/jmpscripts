@@ -32,14 +32,6 @@ diffindiff `model' `dv' `unit' `cutoff' `mode'
 
 log close
 
-* testing
-* local datafile panelfips
-* local model xtpoisson
-* local dv numcontrib
-* local unit fipsbig
-* local cutoff 2014
-* local mode run
-
 program droppre
 
 local unit fips

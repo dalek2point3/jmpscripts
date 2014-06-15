@@ -1,7 +1,3 @@
-** this ado takes a XT regression, runs it with "fe vce(robust)" and then saves it in a file
-
-program runcommand
-
 clear all
 set more off
 set matsize 11000
@@ -16,14 +12,28 @@ global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
 
 adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
 
+local datafile `1'
+local command `2'
+local saveas `3'
+
 cd ${path}
 
-args datafile command saveas
+log using logs/ddlog_`saveas', text replace
 
-di "ADO: datafile: `datafile'"
-di "ADO: model: `command'"
-di "ADO: saveas: `saveas'"
+shell echo "`command'"
 
-//shell qsub -b y stata "`command'" 
-shell qsub -b y -cwd stata -b 'runcommand.do `datafile' \"`command'\" `saveas''
-end
+di "datafile: `datafile'"
+di "model: `command'"
+di "saveas: `saveas'"
+
+use ${stash}`datafile', clear
+
+est clear
+eststo: `command', fe vce(robust)
+
+estimates save ${myestimates}`saveas', replace
+
+log close
+
+
+

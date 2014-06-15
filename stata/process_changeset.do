@@ -45,43 +45,28 @@ program drop _all
 
  ** Analysis 
 
- // 1.1 Mean Charts
+// 0. Data
 
- // 1.2 Produce Diff in diff Latex tables
- // rundd -> batchreg.sh -> runreg.do -> diffindiff.ado
- program drop _all
+// 0.1 preprep
+preparebasic
+mergebasic
 
- // TODO: fix manual process
- // have to do this manually
+// 0.2 make fips dataset
+use ${stash}mergemaster1, clear
+makedv fips
+balancepanel fips
+save ${stash}panelfips, replace
 
- // 1.3 Produce Diff in diff Pictures
-
- ** person level regressions
- // person level
- makeperson
- ddperson maketables
- ddperson makechart
+// 0.3 make node dataset
 
 
- // 0. Data
+makedv fips
 
- // 0.1 preprep
- preparebasic
- mergebasic
-
- // 0.2 make fips dataset
- use ${stash}mergemaster1, clear
- makedv fips
- balancepanel fips
- save ${stash}panelfips, replace
+// TODO: makevar
+// TODO: balancepanel
 
 
- // Analysis
-
-
-    
-di "$S_ADO"
-di "`BASE'"
+// Analysis
 
 // 1. Summary stats
 use ${stash}panelfips, clear
@@ -143,7 +128,6 @@ ddchart
 // 4 Heterogenous Effects
 
 // 1. Large vs. small
-
 use ${stash}panelfips, clear
 gen large = (cntypop > 100000)
 
@@ -188,6 +172,24 @@ diffindiff2 large LARGE tab_4.1 numco numuser numnewusers write
 // TASKS for tomorrow
 
 
+// STASH
+
+ // 1.1 Mean Charts
+
+ // 1.2 Produce Diff in diff Latex tables
+ // rundd -> batchreg.sh -> runreg.do -> diffindiff.ado
+ program drop _all
+
+ // TODO: fix manual process
+ // have to do this manually
+
+ // 1.3 Produce Diff in diff Pictures
+
+ ** person level regressions
+ // person level
+ makeperson
+ ddperson maketables
+ ddperson makechart
 
 
 // TODOs for Tuesday Jun 3
