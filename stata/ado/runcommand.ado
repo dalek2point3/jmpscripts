@@ -25,5 +25,5 @@ di "ADO: model: `command'"
 di "ADO: saveas: `saveas'"
 
 //shell qsub -b y stata "`command'" 
-shell qsub -b y -cwd stata -b 'runcommand.do `datafile' \"`command'\" `saveas''
+shell qsub -b y -cwd -pe statape 8 stata -b 'runcommand.do `datafile' \"`command'\" `saveas''
 end
