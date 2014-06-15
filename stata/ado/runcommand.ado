@@ -14,7 +14,7 @@ global stash "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/"
 global myestimates "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/estimates/"
 global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
 
-adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
+qui adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
 
 cd ${path}
 
@@ -25,5 +25,7 @@ di "ADO: model: `command'"
 di "ADO: saveas: `saveas'"
 
 //shell qsub -b y stata "`command'" 
-shell qsub -b y -cwd -pe statape 8 stata -b 'runcommand.do `datafile' \"`command'\" `saveas''
+shell qsub -b y -cwd -pe statape 4 stata -b 'runcommand.do `datafile' \"`command'\" `saveas''
+
+use ${stash}`datafile', clear
 end
