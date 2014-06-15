@@ -44,5 +44,16 @@ gen year = year(dofm(month))
 gsort unitid month
 xtset unitid month
 
+
+label variable numcontrib "Contrib"
+label variable numchanges "Changes"
+label variable numuser "Users"
+label variable numserious90 "Serious Users"
+label variable numserious95 "Serious Users (95)"
+label variable numnewusers "New Users"
+label variable numnewusers6 "New Users(6+)"
+label variable numnewusers6 "New Users(6+)"
+label variable numnewusers90 "New Users(Super)"
+
 end
 
