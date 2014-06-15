@@ -56,7 +56,7 @@ di "----"
 
 save ${stash}tmp, replace
 
-local command "xtpoisson `t' 1.treat#1.post 1.post#1.large 1.treat#1.post#1.large i.month"
+local command "xtpoisson `t' 1.treat#1.post 1.post#1.`var' 1.treat#1.post#1.`var' i.month"
 
 di "now running for `t'"
 di "--"
@@ -92,6 +92,6 @@ local tabname `1'
 local var `2'
 local varlabel `3'
 
-esttab using "${tables}`tabname'_fips_`var'.tex", keep(1.treat#1.post 1.post#1.`var' 1.treat#1.post#1.`var') coeflabels(1.treat#1.post#1.large "TIGER X POST X `varlabel'" 1.treat#1.post "TIGER X POST" 1.post#1.`var' "POST X `varlabel'" ) order(1.treat#1.post#1.large 1.treat#1.post 1.post#1.`var') se ar2 nonotes replace booktabs  s(unitfe monthfe N N_g, label("County FE" "Month FE" "N" "Clusters")) label
+esttab using "${tables}`tabname'_fips_`var'.tex", keep(1.treat#1.post 1.post#1.`var' 1.treat#1.post#1.`var') coeflabels(1.treat#1.post#1.`var' "TIGER X POST X `varlabel'" 1.treat#1.post "TIGER X POST" 1.post#1.`var' "POST X `varlabel'" ) order(1.treat#1.post#1.`var' 1.treat#1.post 1.post#1.`var') se ar2 nonotes replace booktabs  s(unitfe monthfe N N_g, label("County FE" "Month FE" "N" "Clusters")) label
 
 end
