@@ -10,7 +10,7 @@ global stash "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/"
 global myestimates "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/estimates/"
 global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
 
-adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
+qui adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
 
 local datafile `1'
 local command `2'
