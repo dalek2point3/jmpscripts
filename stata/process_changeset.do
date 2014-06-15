@@ -133,9 +133,11 @@ gen large = (cntypop > 100000)
 
 program drop _all
 
-diffindiff2 large LARGE tab_4.1 numco numuser numnewusers run
+diffindiff2 large LARGE tab_4.1 numcontrib numuser numnewusers run
 
-diffindiff2 large LARGE tab_4.1 numco numuser numnewusers write
+diffindiff2 large LARGE tab_4.1 numcontrib numuser numserious90 run
+
+diffindiff2 large LARGE tab_4.1 numco numuser numserious90 write
 
 
 // 1. engaged vs. non-engaged county
