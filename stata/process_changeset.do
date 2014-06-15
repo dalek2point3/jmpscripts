@@ -131,23 +131,31 @@ ddchart
 use ${stash}panelfips, clear
 gen large = (cntypop > 100000)
 
-program drop _all
-
-label variable numcontrib "Contrib"
-label variable numuser "Users"
-label variable numserious90 "Serious Users"
-label variable numnewusers "New Users"
-label variable numnewusers6 "New Users(6+)"
-
 diffindiff2 large LARGE tab_4.1 run numcontrib numuser numserious90 numnewusers6
 
 diffindiff2 large LARGE tab_4.1 write numcontrib numuser numserious90 numnewusers6
 
+// 2. engaged vs. non-engaged county
 
-// 1. engaged vs. non-engaged county
-// 2. urban vs rural
-// 3. university vs non university
-// 4. rich vs poor
+use ${stash}panelfips, clear
+
+bysort fips post: egen tmp = total(numcontrib > 0)
+replace tmp = . if post == 1
+bysort fips: egen precontrib = max(tmp)
+drop tmp
+
+gen active = (prec > 0)
+drop if precontrib == 0
+
+diffindiff2 active ACTIVE tab_4.2 run numcontrib numuser numserious90 numnewusers6
+
+diffindiff2 active ACTIVE tab_4.2 write numuser numserious90 numnewusers6
+
+
+
+// 3. urban vs rural
+// 4. university vs non university
+// 5. rich vs poor
 
 // 5 Person Level Regressions
 
