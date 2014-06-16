@@ -1,16 +1,99 @@
 program makedv
 
-* use ${stash}mergemaster1, clear
-
-// unit = fips, geoid10 or tileid
-
-local unit `0'
-* local unit "uid"
+local unit `1'
+local mode `2'
 
 drop if `unit' == "NA"
 
 egen unitid = group(`unit')
 genvar unitid
+
+if "`mode'" == "node"{
+    gennodevar unitid
+}
+
+if "`mode'" == "way"{
+    genwayvar unitid
+}
+
+if "`mode'" == ""{
+    genchangevar unitid
+}
+
+end
+
+
+program genchangevar
+
+local unit `1'
+di "generating change-specific vars"
+bysort `unit' month: egen numchanges = total(num_change)
+
+end
+
+
+program gennodevar
+
+local unit `1'
+di "generating node-specific vars"
+
+// note: things can have multiple tags
+// num amenity
+bysort `unit' month: gen tmp1 = (amenity!="NA")
+bysort `unit' month: egen numamenity = total(tmp1)
+drop tmp1
+
+// num address
+bysort `unit' month: gen tmp1 = (addr!="NA")
+bysort `unit' month: egen numaddr = total(tmp1)
+drop tmp1
+
+end
+
+
+program genwayvar
+
+local unit `1'
+di "generating way-specific vars"
+
+
+// gen userfulvars
+gen istiger = (tigercfcc == "NA" & tigercounty == "NA" & highway != "NA")
+
+
+// non tiger highways added
+bysort `unit' month: gen tmp1 = (highway!="NA")
+
+tab version if tigercfcc != "NA"
+tab version if tigercfcc == "NA" & highway != "NA"
+
+
+
+
+
+
+
+                                     
+
+                                     
+count if highway != "NA"
+count if highway != "NA" & tigercfcc != "NA"
+
+
+
+// tiger highways updated
+
+// metadata added
+
+// buildings / amenities added // parking added
+
+
+
+
+// highway, amenity, building, parking
+// access, oneway, maxspeed, lanes
+
+
 
 end
 
@@ -28,7 +111,6 @@ drop tmp1
 
 // a) contribs
 bysort `unit' month: gen numcontrib = _N
-bysort `unit' month: egen numchanges = total(num_change)
 
 // b) users
 bysort `unit' month uid: gen tmp1 = (_n==1)
@@ -60,6 +142,12 @@ drop tmp1
 // new super users
 bysort `unit' month uid: gen tmp1 = (_n==1) * (month==minmonth) * (numuserc >= 18)
 bysort `unit' month: egen numnewusers90 = total(tmp1)
+drop tmp1
+
+// new first time users in unit
+sort `unit' uid month
+bysort `unit' uid: gen tmp1 = (_n==1)
+bysort `unit' month: egen numfirstseen = total(tmp1)
 drop tmp1
 
 end

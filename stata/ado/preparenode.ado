@@ -11,9 +11,10 @@ program makenodevar
 
 use ${stash}mergemaster_node, clear
 
+makedv fips node
 
+program drop _all
 
-pass
 
 
 

@@ -47,23 +47,22 @@ program drop _all
 
 // 0. Data
 
-// 0.1 preprep
+// 0.1 make fips dataset
 preparebasic
 mergebasic
 
-// 0.2 make fips dataset
 use ${stash}mergemaster1, clear
 makedv fips
 balancepanel fips
 save ${stash}panelfips, replace
 
-// 0.3 make node dataset
+// 0.2 make node dataset
 preparenode
 
-makedv fips
-
-// TODO: makevar
-// TODO: balancepanel
+use ${stash}mergemaster_node, clear
+makedv fips node
+balancepanel fips node
+save ${stash}panelnode, replace
 
 
 // Analysis

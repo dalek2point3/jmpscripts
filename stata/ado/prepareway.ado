@@ -1,5 +1,17 @@
 insheet using ${rawhist}way_gc.csv, clear
 
+
+renamevar
+cleanvar
+droplargeuser
+
+save ${stash}way_stash, replace
+
+use ${stash}way_stash, clear
+
+
+
+
 program renamevar
 
 rename v1 highway
@@ -27,22 +39,6 @@ rename v42 geoid10
 drop v21-v40
 
 end
-
-save ${stash}tmp, replace
-
-program cleanvar
-
-end
-
-insheet using ${rawhist}node_gc.csv, clear
-
-renamevar
-cleanvar
-droplargeuser
-
-save ${stash}way_stash, replace
-
-
 
 
 program droplargeuser

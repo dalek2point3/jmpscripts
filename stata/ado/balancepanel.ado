@@ -1,13 +1,34 @@
 program balancepanel
 
 * local unit uid
-local unit `0'
+local unit `1'
 * destring `unit', gen(unitid)
+local mode `2'
 
 bysort unitid month: drop if _n > 1
 
+if "`mode'" == ""{
 // clean user level vars
-drop change uid num_c lat lon tstamp* minmonth nummonth numusercontrib 
+drop change uid num_c lat lon tstamp* minmonth nummonth numusercontrib
+
+** fill in zeros if missing DVs are present
+local outcomes "numcontrib numserious90 numnewusers numnewusers90 numuser numserious95  numnewusers6 numchanges numfirstseen" 
+
+label variable numchanges "Changes"
+
+}
+
+if "`mode'" == "node"{
+// clean user level vars
+drop change uid lat lon tstamp* minmonth nummonth numusercontrib 
+
+** fill in zeros if missing DVs are present
+local outcomes "numcontrib numserious90 numnewusers numnewusers90 numuser numserious95  numnewusers6 numfirstseen numamenity numaddr"
+
+label variable numamenity "Amenities"
+label variable numaddr "Addresses"
+
+}
 
 // fill in zeros
 tsset unitid month
@@ -16,8 +37,6 @@ tsset unitid month
 ** this includes blanks if first and last month are missing
 tsfill, full
 
-** fill in zeros if missing DVs are present
-local outcomes "numcontrib numserious90 numnewusers numnewusers90 numuser numserious95  numnewusers6 numchanges"
 
 foreach x in `outcomes'{
     replace `x' = 0 if `x' == .
@@ -46,7 +65,6 @@ xtset unitid month
 
 
 label variable numcontrib "Contrib"
-label variable numchanges "Changes"
 label variable numuser "Users"
 label variable numserious90 "Serious Users"
 label variable numserious95 "Serious Users (95)"
@@ -54,6 +72,7 @@ label variable numnewusers "New Users"
 label variable numnewusers6 "New Users(6+)"
 label variable numnewusers6 "New Users(6+)"
 label variable numnewusers90 "New Users(Super)"
+label variable numfirstseen "News Users(F)"
 
 end
 
