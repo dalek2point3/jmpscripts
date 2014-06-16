@@ -142,14 +142,26 @@ use ${stash}panelfips, clear
 bysort fips post: egen tmp = total(numcontrib > 0)
 replace tmp = . if post == 1
 bysort fips: egen precontrib = max(tmp)
+bysort fips: egen totcontrib = total(numcontrib)
 drop tmp
 
-gen active = (prec > 0)
 drop if precontrib == 0
+gen active = (prec > 1)
 
 diffindiff2 active ACTIVE tab_4.2 run numcontrib numuser numserious90 numnewusers6
 
-diffindiff2 active ACTIVE tab_4.2 write numuser numserious90 numnewusers6
+diffindiff2 active ACTIVE tab_4.2 write numcontrib numuser numserious90 numnewusers6
+
+// 3. populated vs. not
+
+use ${stash}panelfips, clear
+
+gen iseast = (region==1 | region == 2)
+
+diffindiff2 iseast EAST tab_4.3 run numcontrib numuser numserious90 numnewusers6
+
+diffindiff2 iseast EAST tab_4.3 write numcontrib numuser numserious90 numnewusers6
+
 
 
 
