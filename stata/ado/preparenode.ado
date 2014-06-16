@@ -3,18 +3,21 @@ insheet using ${rawhist}node_gc.csv, clear
 renamevar
 cleanvar
 droplargeuser
-
 mergevar
-
-count if addr == "NA" & amenity == "NA"
-
-tab user if place != "NA", sort
 
 save ${stash}mergemaster_node, replace
 
 program makenodevar
 
+use ${stash}mergemaster_node, clear
 
+
+
+pass
+
+
+
+end
 
 
 program mergevar

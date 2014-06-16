@@ -58,7 +58,7 @@ balancepanel fips
 save ${stash}panelfips, replace
 
 // 0.3 make node dataset
-
+preparenode
 
 makedv fips
 
