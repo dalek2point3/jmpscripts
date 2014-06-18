@@ -1,23 +1,50 @@
+* diffindiff xtpoisson "`dv'" `unit' 2014 write tab_3.2.2 "New Users" "New Users(6+)" "New Super Users"
+
+* diffindiff2 xtpoisson fips write tab_3.2.2 numcontrib numusers ...
+
+* diffindiff2 xtpoisson fips run tab_test numcontrib
+
+
 program diffindiff
 
+* local dv `2'
+* local cutoff `4'
+
 local model `1'
-local dv `2'
-local unit `3'
-local cutoff `4'
-local mode `5'
-local table `6'
-local t1 "`7'"
-local t2 "`8'"
-local t3 "`9'"
+local unit `2'
+local mode `3'
+local table `4'
+local cutoff 2014
+
+// this stores variable names in as t1, t2, t3 and so on
+local i = 5
+while "``i''" != "" {
+    local count = `i' - 4
+    local t`count' = "``i''"
+    ** di "var is `t`count''" 
+    local ++i
+}
+
 
 di "OK, you asked me to generate DD charts"
-di "for `model', unit: `unit', DVs: `dv', mode: `mode'"
-di "cutoff: `cutoff', titles: `titles'"
+di "for `model', unit: `unit', mode: `mode'"
 
-if "`mode'" == "run"{
-    drop if year > `cutoff'
-    runreg `model' "`dv'" `unit' `cutoff'
+*if "`mode'" == "run"{
+*    drop if year > `cutoff'
+*    runreg `model' "`dv'" `unit' `cutoff'
+*}
+
+if "`mode'" == "run" {
+    di "Running regressions ///"
+    local i = 1
+    while "`t`i''" != "" {
+        local t "`t`i''"
+        ** di "running `t'"
+        run_reg `t' `table' `model'
+        local ++i
+    }
 }
+
 
 if "`mode'" == "write" & "`unit'" != "uid"{
     loadreg `model' "`dv'" `unit' `cutoff'
@@ -30,6 +57,30 @@ if "`mode'" == "write" & "`unit'" == "uid"{
 }
 
 end
+
+program run_reg
+
+local t `1'
+local tabname `2'
+local model `3'
+
+di "----"
+di "model: `model', tab: `tabname'"
+di "----"
+
+save ${stash}tmp, replace
+
+local command "`model' `t' 1.treat#1.post i.month"
+
+di "now running for `t'"
+di "--"
+runcommand tmp "`command'" `tabname'_fips_`t'
+di "--"
+
+end
+
+
+
 
 program runreg
 local model `1'
