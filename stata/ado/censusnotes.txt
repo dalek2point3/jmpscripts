@@ -1,0 +1,64 @@
+// age data
+income,
+education,
+race,
+employment (students)
+"tech" (tech employment, consumer spending on tech)
+area, pop density, households,
+major urban areas
+
+
+
+age: 
+
+
+geoid2 == fips
+geodisplaylabel == countyname
+
+HD01_S001 -- total population 
+
+HD02_S002 -- under 5
+HD02_S003 -- 5-9
+HD02_S004 -- 10-14
+HD02_S005 -- 15-19
+HD02_S006 -- 20-24
+HD02_S007 -- 25-29
+HD02_S008 -- 30-34
+HD02_S009 -- 35-39
+HD02_S0010 -- 40-44
+HD02_S0011 -- 45-49
+HD02_S0012 -- 50-54
+HD02_S0013 -- 55-59
+HD02_S0014 -- 60-64
+HD02_S0015 -- 65-69
+HD02_S0016 -- 70-74
+HD02_S0017 -- 75-79
+HD02_S0018 -- 80-84
+HD02_S0019 -- 85+
+
+hd_01_s020 -- median age
+hd02_s026 percent_male
+
+hd02_s078 -- percent white
+hd02_s079 -- percent black
+hd02_s080 -- american indian
+hd02_s081 -- asian
+hd02_s082 -- indian
+hd02_s0106 -- hispanic
+
+hd02_s0150 -- households
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

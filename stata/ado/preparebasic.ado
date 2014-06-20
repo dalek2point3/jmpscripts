@@ -20,6 +20,7 @@ insheet using ${rawmaps}county_lookup.csv, clear
 // TODO: calculate area
 // TODO: match to census data from
 // http://www.census.gov/support/USACdataDownloads.html#PEN
+// American Fact Finder - "download center"
 
 keep fips color treat
 gen str5 fips2 = string(fips, "%05.0f")
@@ -27,18 +28,33 @@ drop fips
 rename fips2 fips
 save ${stash}countylookup, replace
 
+// 0.3.2 clean related county data
+
+program drop census_pop
+census_pop
+
+
 // 0.3.2 clean county data and merge
 insheet using ${rawmaps}CO-EST2012-Alldata.csv, clear
 cleancnty
+
 merge 1:1 fips using ${stash}countylookup, keep(match) nogen
+merge 1:1 fips using ${rawmaps}census_pop, keep(match) nogen
+destring, replace
+
 save ${stash}cleancnty, replace
 
 end
+
+
+
 
 program cleancnty
 
 // TODO: add income, race, poverty information
 // layout: http://www.census.gov/popest/data/counties/totals/2012/files/CO-EST2012-alldata.pdf
+
+
 
 // this drops all the states
 drop if sumlev == 40
