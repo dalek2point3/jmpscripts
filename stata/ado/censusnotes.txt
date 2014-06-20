@@ -1,6 +1,21 @@
 
 //ACS
 
+
+///S24 (occupation)
+
+HC04_EST_VC01	
+Median earnings (dollars); Estimate; Civilian employed population 16 years and over
+
+HC01_EST_VC02	
+Total; Estimate; Management, business, science, and arts occupations:
+
+HC01_EST_VC06	 Total; Estimate; Management, business, science, and arts occupations: - Computer, engineering, and science occupations:
+
+
+
+
+/// DP02 (social characteritics)
 geoid2 fips
 
 HC01_VC80	
@@ -13,7 +28,6 @@ HC01_VC91
 Estimate; EDUCATIONAL ATTAINMENT - Graduate or professional degree
 HC03_VC91	
 Percent; EDUCATIONAL ATTAINMENT - Graduate or professional degree
-
 
 
 

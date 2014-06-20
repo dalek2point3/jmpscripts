@@ -28,30 +28,49 @@ drop fips
 rename fips2 fips
 save ${stash}countylookup, replace
 
-// 0.3.2 clean related county data
+// 0.3.2 clean related county data == census (race, pop)
 census_pop
 
+// 0.3.3 clean related countt data == acs (educ, income etc)
+acs_pop
+
+// 0.3.4 area
+
+savearea
 
 // 0.3.2 clean county data and merge
 insheet using ${rawmaps}CO-EST2012-Alldata.csv, clear
 cleancnty
 
 merge 1:1 fips using ${stash}countylookup, keep(match) nogen
+
 merge 1:1 fips using ${rawmaps}census_pop, keep(match) nogen
-destring, replace
+
+merge 1:1 fips using ${rawmaps}acs, keep(match) nogen
+
+merge 1:1 fips using ${stash}area_tmp, keep(match) nogen
 
 save ${stash}cleancnty, replace
 
 end
 
 
+program savearea
+
+insheet using ${rawmaps}area.txt, clear names
+
+gen str5 fips = string(geoid, "%05.0f")
+keep fips aland_sqmi
+
+save ${stash}area_tmp, replace
+
+end
 
 
 program cleancnty
 
 // TODO: add income, race, poverty information
 // layout: http://www.census.gov/popest/data/counties/totals/2012/files/CO-EST2012-alldata.pdf
-
 
 
 // this drops all the states
