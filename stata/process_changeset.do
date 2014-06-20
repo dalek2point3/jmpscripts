@@ -113,7 +113,6 @@ program drop _all
 
 diffindiff xtpoisson fips run tab_test numcontrib numuser 
 
-numusers ...
 
 
 /// 3.2.4 -- completeness

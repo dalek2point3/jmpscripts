@@ -35,7 +35,6 @@ census_pop
 acs_pop
 
 // 0.3.4 area
-
 savearea
 
 // 0.3.2 clean county data and merge
