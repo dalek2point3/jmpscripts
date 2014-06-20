@@ -1,3 +1,24 @@
+
+//ACS
+
+geoid2 fips
+
+HC01_VC80	
+Estimate; SCHOOL ENROLLMENT - College or graduate school
+
+HC03_VC80	
+Percent; SCHOOL ENROLLMENT - College or graduate school
+
+HC01_VC91	
+Estimate; EDUCATIONAL ATTAINMENT - Graduate or professional degree
+HC03_VC91	
+Percent; EDUCATIONAL ATTAINMENT - Graduate or professional degree
+
+
+
+
+
+// CENSUS2010
 // age data
 income,
 education,
@@ -6,6 +27,7 @@ employment (students)
 "tech" (tech employment, consumer spending on tech)
 area, pop density, households,
 major urban areas
+
 
 
 

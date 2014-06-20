@@ -29,8 +29,6 @@ rename fips2 fips
 save ${stash}countylookup, replace
 
 // 0.3.2 clean related county data
-
-program drop census_pop
 census_pop
 
 
