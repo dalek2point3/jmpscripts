@@ -38,21 +38,32 @@ gen isc = (status == "closed")
 
 
 reg bugs treat, robust
-
 reg bugs treat##hasurb cntypop c2, robust
+
+
+gen hasbugs = bugs > 0
+
+gen popdens = cntypop / aland
+gen hipopdens = (popdens > 100)
+
+logit hasbugs treat hipop cntypop c2 emp_earn aland i.region, robust
+
+
+reg bugs treat hipop cntypop c2 emp_* age_young aland if cntypop > 100000, robust
+
+logit hasbugs treat hipop cntypop c2 emp_* age_young aland if cntypop > 100000, robust
+
+probit bugs treat hipop cntypop c2 emp_earn aland, robust
+
 
 
 poisson bugs treat cntypop c2, robust
 
-gen hasbugs = bugs > 0
-gen hasopen = open > 0
-
-logit hasbugs treat cntypop c2, robust
 
 
 reg bugs treat##hasurban cntypop c2, robust
 
-probit bugs treat##hasurban cntypop c2, robust
+probit bugs treat##hasurban cntypop c2 i.region, robust
 
 
 tab treat hasurban
