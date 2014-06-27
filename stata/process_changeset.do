@@ -9,7 +9,9 @@ global rawtrips "/mnt/nfs6/wikipedia.proj/jmp/rawdata/trips/"
 global stash "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/"
 global myestimates "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/estimates/"
 global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
- global rawhist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmhistory/"
+global rawhist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmhistory/"
+global clist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/clist/"
+
 
 adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
 
@@ -113,8 +115,6 @@ program drop _all
 
 diffindiff xtpoisson fips run tab_test numcontrib numuser 
 
-
-
 /// 3.2.4 -- completeness
 // TODO
 
@@ -169,8 +169,6 @@ diffindiff2 iseast EAST tab_4.3 run numcontrib numuser numserious90 numnewusers6
 diffindiff2 iseast EAST tab_4.3 write numcontrib numuser numserious90 numnewusers6
 
 
-
-
 // 3. urban vs rural
 // 4. university vs non university
 // 5. rich vs poor
@@ -188,7 +186,11 @@ diffindiff2 iseast EAST tab_4.3 write numcontrib numuser numserious90 numnewuser
 
    // a. Junior vs Senior
 
-// 6 Impacts on Navigation
+// 6 Impacts on Craigslist
+
+preparecl
+
+
 
 // PENDING
 

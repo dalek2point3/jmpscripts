@@ -9,6 +9,10 @@ rename v6 status
 rename v7 fips
 rename v8 geoid10
 
+gen isopen = (status == "open")
+
+** outsheet using ${stash}clnotes.csv, replace
+
 drop if fips == "NA"
 
 merge m:1 fips using ${stash}cleancnty
@@ -23,7 +27,6 @@ bysort fips: egen hasurban = total((geoid10!="NA"))
 replace hasurban = (hasurban > 0)
 
 local unit fips
-
 bysort `unit': egen bugs = total(isbug)
 bysort `unit': egen open = total(status=="open")
 bysort `unit': egen closed = total(status=="closed")
