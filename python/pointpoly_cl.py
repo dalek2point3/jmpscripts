@@ -139,7 +139,8 @@ if __name__ == "__main__":
     ## use the other script in this package to convert changesets to csv
     ## pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/x_tmp.csv"
     ## pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmchange/changesets-may26-usa.csv"
-    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/cl_notes.csv"
+    ## pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/cl_notes.csv"
+    pointfile = "/mnt/nfs6/wikipedia.proj/jmp/rawdata/clist/areas.tsv"
 
     # specify start and end points here.
     startflag = int(sys.argv[1].strip())
