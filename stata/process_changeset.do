@@ -12,7 +12,6 @@ global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
 global rawhist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmhistory/"
 global clist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/clist/"
 
-
 adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
 
 cd ${path}
@@ -26,11 +25,11 @@ program drop _all
  // Step 1.3 -- fills in blanks and xtset the data
 
 
- // for geoid10-fips
- use ${stash}mergemaster1, clear
- makedv "fips geoid10"
- balancepanel geoid10
- save ${stash}panelfips_geoid10, replace
+// for geoid10-fips
+use ${stash}mergemaster1, clear
+makedv "fips geoid10"
+balancepanel geoid10
+save ${stash}panelfips_geoid10, replace
 
  // just geoid
  use ${stash}mergemaster1, clear
