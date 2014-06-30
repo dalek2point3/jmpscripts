@@ -5,13 +5,18 @@
 program makehist
 
 local mode `2'
+local var `1'
+local title "`3'"
+
+di "Makehist for `var', title: `title'"
+
 gen var = `1'
 
 di "---"
 di "    generating histogram(`mode') for `1'   "
 di "---"
 
-makehist_`mode'
+makehist_`mode' `var' "`title'"
 
 drop lnvar var
 
@@ -20,11 +25,13 @@ end
 program makehist_kdensity
 
 gen lnvar = ln(var)
+local title `2'
+di "Makehist title: `title'"
 
-twoway (kdensity lnvar if treat==1) (kdensity lnvar if treat==0), title(Population Distribution) legend(order(1 "TIGER Counties" 2 "Control Counties")) ytitle("")
+twoway (kdensity lnvar if treat==1) (kdensity lnvar if treat==0), title("`title'") legend(order(1 "TIGER Counties" 2 "Control Counties")) ytitle("")
 
-graph export ${tables}kdens_cnty.eps, replace
-shell epstopdf ${tables}kdens_cnty.eps
+graph export ${tables}kdens_cnty_`1'.eps, replace
+shell epstopdf ${tables}kdens_cnty_`1'.eps
 
 end
 
