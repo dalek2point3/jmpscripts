@@ -9,9 +9,24 @@ cd ${path}
 // this declares global vars
 declare_global
 
-// Make FIPS dataset
+// 0. Data
 
+// 0.1 make cleancnty, changesets data
+clear
 preparebasic
+
+// 0.2 make relevant dependent variables
+use ${stash}cleanchangeset1, clear
+makedv fips
+balancepanel fips
+mergebasic
+qui destring, replace
+save ${stash}panelfips, replace
+
+// 1. Summary Stats
+program drop _all
+use ${stash}panelfips, clear
+makesummary
 
 
 
@@ -21,10 +36,8 @@ preparebasic
 // 0. Data
 
 // 0.1 make fips dataset
-mergebasic
-
 use ${stash}mergemaster1, clear
-makedv fips
+
 balancepanel fips
 save ${stash}panelfips, replace
 
@@ -42,11 +55,6 @@ makedv fips way
 balancepanel fips way
 save ${stash}panelway, replace
 
-// Analysis
-
-// 1. Summary stats
-use ${stash}panelfips, clear
-makesummary
 
 // 2. Treatment vs. control charts
 use ${stash}panelfips, clear

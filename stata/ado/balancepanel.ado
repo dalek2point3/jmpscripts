@@ -1,8 +1,6 @@
 program balancepanel
 
-* local unit uid
 local unit `1'
-* destring `unit', gen(unitid)
 local mode `2'
 
 drop if month < 540
@@ -17,6 +15,15 @@ drop change uid num_c lat lon tstamp* minmonth nummonth numusercontrib
 local outcomes "numcontrib numserious90 numnewusers numnewusers90 numuser numserious95  numnewusers6 numchanges numfirstseen" 
 
 label variable numchanges "Changes"
+label variable numcontrib "Contrib"
+label variable numuser "Users"
+label variable numserious90 "Serious Users"
+label variable numserious95 "Serious Users (95)"
+label variable numnewusers "New Users"
+label variable numnewusers6 "New Users(6+)"
+label variable numnewusers6 "New Users(6+)"
+label variable numnewusers90 "New Users(Super)"
+label variable numfirstseen "News Users(F)"
 
 }
 
@@ -54,7 +61,6 @@ label variable numclass4 "Class 4"
 }
 
 
-
 // fill in zeros
 tsset unitid month
 
@@ -67,8 +73,27 @@ foreach x in `outcomes'{
     replace `x' = 0 if `x' == .
 }
 
+fillcovars
+
+// generate new vars
+gen post =  month > mofd(date("10-1-2007","MDY"))
+gen year = year(dofm(month))
+
+drop user 
+
+gsort unitid month
+xtset unitid month
+
+end
+
+
+
+program fillcovars
+
 ** fill in the covariates
-local covars "fips geoid10 region division state county stname cntyname cntypop color treat uaname uapop uahu uaarea uapopden uaclus age_median percent_male percent_white num_house age_y age_mid age_old emp_earn emp_busi emp_comp educ_college educ_college_p educ_grad educ_grad_p aland_sq"
+** local covars "fips geoid10 region division state county stname cntyname cntypop color treat uaname uapop uahu uaarea uapopden uaclus age_median percent_male percent_white num_house age_y age_mid age_old emp_earn emp_busi emp_comp educ_college educ_college_p educ_grad educ_grad_p aland_sq"
+
+local covars "fips geoid10"
 
 foreach x in `covars'{
     gsort unitid month
@@ -81,23 +106,5 @@ foreach x in `covars'{
     di "---"
 }
 
-// generate new vars
-gen post =  month > mofd(date("10-1-2007","MDY"))
-gen year = year(dofm(month))
-
-gsort unitid month
-xtset unitid month
-
-
-label variable numcontrib "Contrib"
-label variable numuser "Users"
-label variable numserious90 "Serious Users"
-label variable numserious95 "Serious Users (95)"
-label variable numnewusers "New Users"
-label variable numnewusers6 "New Users(6+)"
-label variable numnewusers6 "New Users(6+)"
-label variable numnewusers90 "New Users(Super)"
-label variable numfirstseen "News Users(F)"
 
 end
-
