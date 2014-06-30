@@ -6,22 +6,6 @@ droplargeuser
 
 save ${stash}way_stash, replace
 
-use ${stash}way_stash, clear
-
-keep if highway == "motorway" | highway == "motorway_link"
-
-gen year = year(tstamp_date)
-
-tab year if version == 1
-
-tab fips if version == 1 & year == 2014, sort
-
-tab name if version == 1 & year == 2014 & fips == "40143", sort
-
-tab name if version == 1 & year == 2013, sort
-
-
-tab user if name == "Intercounty Connector" & version == 1
 
 
 program renamevar
@@ -52,7 +36,6 @@ drop v21-v40
 
 end
 
-
 program droplargeuser
 
 drop if user == "DaveHansenTiger"
@@ -69,6 +52,7 @@ drop if user == "TIGERcnl"
 drop if user == "canvec_fsteggink"
 drop if user == "OSMF Redaction Account"
 drop if user == "bot-mode"
+drop if user == "Milenko" & istiger == 1
 
 end
 

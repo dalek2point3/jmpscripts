@@ -56,44 +56,79 @@ program genwayvar
 local unit `1'
 di "generating way-specific vars"
 
-
 // gen userfulvars
+gen ishighway = (highway!="NA")
+gen isbuilding = (building!="NA")
+gen isparking = (parking!="NA")
+gen isamenity = (amenity!="NA")
+
+gen type = ""
+replace type = type + "highway " if ishighway == 1
+replace type = type + "building " if isbuilding == 1
+replace type = type + "parking " if isparking == 1
+replace type = type + "amenity " if isamenity == 1
+
 gen istiger = (tigercfcc == "NA" & tigercounty == "NA" & highway != "NA")
+replace istiger = !istiger
+replace istiger = . if ishighway == 0
+
+gen hasattrib = (maxspeed != "NA") | (oneway != "NA") | (lanes != "NA") | (access != "NA")
+replace hasattrib = . if ishighway == 0
+
+makehighwayclass
+
+// highway, building, parking, amenity
+
+// outcomes
+// how many highway, building, amenity were added?
+bysort `unit' month: egen numhighway = total(ishighway)
+bysort `unit' month: egen numbuilding = total(isbuilding)
+bysort `unit' month: egen numamenity = total(isamenity)
+bysort `unit' month: egen numparking = total(isparking)
+bysort `unit' month: gen numways = _N
+
+// how many non tiger highway added?
+bysort `unit' month: egen numnontiger = total(ishighway*(istiger==0))
+
+// how many tiger ways touched?
+bysort `unit' month: egen numtiger = total(ishighway*(istiger==1))
+
+// how many of different classes
+forvalues x = 1/4{
+    bysort `unit' month: egen numclass`x' = total(ishighway*(highwayclass==`x'))
+}    
+
+end
 
 
-// non tiger highways added
-bysort `unit' month: gen tmp1 = (highway!="NA")
+program makehighwayclass
 
-tab version if tigercfcc != "NA"
-tab version if tigercfcc == "NA" & highway != "NA"
+gen highwayclass = .
+replace highwayclass = 1 if highway == "motorway"
+replace highwayclass = 1 if highway == "motorway_link"
+replace highwayclass = 1 if highway == "trunk"
+replace highwayclass = 1 if highway == "trunk_link"
 
+replace highwayclass = 2 if highway == "primary"
+replace highwayclass = 2 if highway == "primary_link"
+replace highwayclass = 2 if highway == "secondary"
+replace highwayclass = 2 if highway == "secondary_link"
 
+replace highwayclass = 3 if highway == "tertiary"
+replace highwayclass = 3 if highway == "tertiary_link"
+replace highwayclass = 3 if highway == "residential"
+replace highwayclass = 3 if highway == "unclassified"
+replace highwayclass = 3 if highway == "road"
+replace highwayclass = 3 if highway == "service"
 
+replace highwayclass = 4 if highway == "footway"
+replace highwayclass = 4 if highway == "track"
+replace highwayclass = 4 if highway == "path"
+replace highwayclass = 4 if highway == "cycleway"
+replace highwayclass = 4 if highway == "pedestrian"
+replace highwayclass = 4 if highway == "steps"
 
-
-
-
-                                     
-
-                                     
-count if highway != "NA"
-count if highway != "NA" & tigercfcc != "NA"
-
-
-
-// tiger highways updated
-
-// metadata added
-
-// buildings / amenities added // parking added
-
-
-
-
-// highway, amenity, building, parking
-// access, oneway, maxspeed, lanes
-
-
+replace highwayclass = -1 if ishighway == 1 & highwayclass == .
 
 end
 

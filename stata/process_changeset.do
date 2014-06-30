@@ -31,18 +31,18 @@ makedv "fips geoid10"
 balancepanel geoid10
 save ${stash}panelfips_geoid10, replace
 
- // just geoid
- use ${stash}mergemaster1, clear
- drop if geoid10 == "NA"
- bysort geoid10 fips: gen tmp = _n==1
- gen treattmp = treat
- replace treattmp = . if tmp == 0
- bysort geoid10: egen avgtreat = mean(treattmp)
- replace treat = avgtreat
- drop treattmp tmp avgtreat
- makedv "geoid10"
- balancepanel geoid10
- save ${stash}panelgeoid10, replace
+// just geoid
+use ${stash}mergemaster1, clear
+drop if geoid10 == "NA"
+bysort geoid10 fips: gen tmp = _n==1
+gen treattmp = treat
+replace treattmp = . if tmp == 0
+bysort geoid10: egen avgtreat = mean(treattmp)
+replace treat = avgtreat
+drop treattmp tmp avgtreat
+makedv "geoid10"
+balancepanel geoid10
+save ${stash}panelgeoid10, replace
 
  ** Analysis 
 
@@ -65,6 +65,11 @@ makedv fips node
 balancepanel fips node
 save ${stash}panelnode, replace
 
+// 0.3 make way dataset
+prepareway
+makedv fips way
+balancepanel fips way
+save ${stash}panelway, replace
 
 // Analysis
 
@@ -130,6 +135,7 @@ ddchart
 //  h. Repeat (a) with matched estimators
 //  i. Repeat (a) with spatially clustered se, Region X Time trends
 
+
 // 4 Heterogenous Effects
 
 // 1. Large vs. small
@@ -167,12 +173,13 @@ diffindiff2 iseast EAST tab_4.3 run numcontrib numuser numserious90 numnewusers6
 
 diffindiff2 iseast EAST tab_4.3 write numcontrib numuser numserious90 numnewusers6
 
-
 // 3. urban vs rural
 // 4. university vs non university
 // 5. rich vs poor
 
-// 5 Person Level Regressions
+// 5 Street Level Regressions
+
+// 6 Person Level Regressions
 
 // [A] outcome vars: County sample -- DD spec
 
@@ -185,7 +192,8 @@ diffindiff2 iseast EAST tab_4.3 write numcontrib numuser numserious90 numnewuser
 
    // a. Junior vs Senior
 
-// 6 Impacts on Craigslist
+
+// 7 Impacts on Craigslist
 
 preparecl
 

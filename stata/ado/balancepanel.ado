@@ -5,6 +5,8 @@ local unit `1'
 * destring `unit', gen(unitid)
 local mode `2'
 
+drop if month < 540
+
 bysort unitid month: drop if _n > 1
 
 if "`mode'" == ""{
@@ -29,6 +31,29 @@ label variable numamenity "Amenities"
 label variable numaddr "Addresses"
 
 }
+
+if "`mode'" == "way"{
+// clean user level vars
+drop change uid lat lon tstamp* minmonth nummonth numusercontrib 
+
+** fill in zeros if missing DVs are present
+local outcomes "numhighway numbuilding numamenity numparking numways numnontiger numtiger numclass1 numclass2 numclass3 numclass4"
+
+label variable numhighway "Highways"
+label variable numbuilding "Buildings"
+label variable numamenity "Amenities"
+label variable numparking "Parking"
+label variable numways "Ways"
+label variable numnontiger "Non-TIGER"
+label variable numtiger "TIGER"
+label variable numclass1 "Class 1"
+label variable numclass2 "Class 2"
+label variable numclass3 "Class 3"
+label variable numclass4 "Class 4"
+
+}
+
+
 
 // fill in zeros
 tsset unitid month
