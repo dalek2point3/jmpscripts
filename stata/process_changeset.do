@@ -28,6 +28,14 @@ program drop _all
 use ${stash}panelfips, clear
 makesummary
 
+// 2. Treatment Control Balance
+use ${stash}panelfips, clear
+makehist cntypop kdensity "Population"
+makehist emp_earnings kdensity "Earnings"
+makehist age_median kdensity "Median Age"
+makehist educ_college kdensity "Num. College Educated"
+
+** makehist region hist
 
 
 
@@ -56,10 +64,6 @@ balancepanel fips way
 save ${stash}panelway, replace
 
 
-// 2. Treatment vs. control charts
-use ${stash}panelfips, clear
-makehist cntypop kdensity
-makehist region hist
 
 // 3. Baseline effects (xtpoisson, cluster at unit level)
 
