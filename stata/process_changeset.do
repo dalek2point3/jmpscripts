@@ -1,55 +1,26 @@
 clear all
 set more off
 set matsize 11000
-global path "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/"
-global rawosm "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osm/"
-global osmchange "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmchange/"
-global rawmaps "/mnt/nfs6/wikipedia.proj/jmp/rawdata/maps/"
-global rawtrips "/mnt/nfs6/wikipedia.proj/jmp/rawdata/trips/"
-global stash "/mnt/nfs6/wikipedia.proj/jmp/rawdata/stash/"
-global myestimates "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/estimates/"
-global tables "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/tables/"
-global rawhist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmhistory/"
-global clist "/mnt/nfs6/wikipedia.proj/jmp/rawdata/clist/"
-
-adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
-
-cd ${path}
-
 program drop _all
 
- // STEP 0 -- clean 3 datasets (change, msa, county)
- // TODO: add tileid logic
+qui adopath + "/mnt/nfs6/wikipedia.proj/jmp/jmpscripts/stata/ado"
+cd ${path}
 
- // Step 1.2 -- create outcome variables
- // Step 1.3 -- fills in blanks and xtset the data
+// this declares global vars
+declare_global
+
+// Make FIPS dataset
+
+preparebasic
 
 
-// for geoid10-fips
-use ${stash}mergemaster1, clear
-makedv "fips geoid10"
-balancepanel geoid10
-save ${stash}panelfips_geoid10, replace
 
-// just geoid
-use ${stash}mergemaster1, clear
-drop if geoid10 == "NA"
-bysort geoid10 fips: gen tmp = _n==1
-gen treattmp = treat
-replace treattmp = . if tmp == 0
-bysort geoid10: egen avgtreat = mean(treattmp)
-replace treat = avgtreat
-drop treattmp tmp avgtreat
-makedv "geoid10"
-balancepanel geoid10
-save ${stash}panelgeoid10, replace
 
  ** Analysis 
 
 // 0. Data
 
 // 0.1 make fips dataset
-preparebasic
 mergebasic
 
 use ${stash}mergemaster1, clear
@@ -134,7 +105,6 @@ ddchart
 //  g. Repeat (a) for Tile Sample, MSA sample
 //  h. Repeat (a) with matched estimators
 //  i. Repeat (a) with spatially clustered se, Region X Time trends
-
 
 // 4 Heterogenous Effects
 
