@@ -69,11 +69,10 @@ program drop _all
 use ${stash}panelfips, clear
 gen large = (cntypop > 100000)
 
-diffindiff2 large LARGE hetero1 run numcontrib
+local outcomes "numcontrib numuser numserious90"
+diffindiff2 large LARGE hetero1 run `outcomes'
+diffindiff2 large LARGE hetero1 write `outcomes'
 
-numuser numserious90 numnewusers6
-
-diffindiff2 large LARGE tab_4.1 write numcontrib numuser numserious90 numnewusers6
 
 
 
