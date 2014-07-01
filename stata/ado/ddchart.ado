@@ -8,14 +8,14 @@ use ${stash}panelfips, clear
 est clear
 use ${stash}panelfips, clear
 
-gen quarter = qofd(dofm(month))
-format quarter %tq
+gen semester = hofd(dofm(month))
+format semester %th
 
 eststo: xtpoisson numuser 1.treat##b2007.year if month > 550, fe vce(robust)
 estimates save ${myestimates}dd_numuser, replace
 
-eststo: xtpoisson numuser 1.treat##b191.quarter fe vce(robust)
-
+eststo: xtpoisson numuser 1.treat##b95.semester, fe vce(robust)
+estimates save ${myestimates}dd_numuser, replace
 
 
 drawchart numuser 2006
@@ -33,16 +33,17 @@ qui parmest, label list(parm estimate min* max* p) saving(${stash}pars_tmp, repl
 clear
 use ${stash}pars_tmp, clear
 
-keep if regexm(parm, "1.*treat.*year.*") == 1
-gen year = regexs(1) if regexm(parm, ".*#([0-9][0-9][0-9][0-9])b?\..*")
+keep if regexm(parm, "1.*treat.*semester.*") == 1
+gen semester = regexs(1) if regexm(parm, ".*#([0-9][0-9][0-9]?)b?\..*")
 
-destring year, replace
-replace year = year - 2007
+destring semester, replace
+replace semester = semester - 95
+label variable semester "Half-Year"
 
 qui gen xaxis = 0
 * list estimate min max month
 
-graph twoway (connected estimate year, msize(small) lpattern(solid) lcolor(edkblue) lwidth(thin)) (line min year, lwidth(vthin) lpattern(-) lcolor(gs8)) (line max year, lwidth(vthin) lpattern(-) lcolor(gs8)) (line xaxis year, lwidth(vthin) lcolor(gs8)) if year > -2, xline(0) legend(off) title("") xtitle("Year")
+graph twoway (connected estimate semester, msize(small) lpattern(solid) lcolor(edkblue) lwidth(thin)) (line min semester, lwidth(vthin) lpattern(-) lcolor(gs8)) (line max semester, lwidth(vthin) lpattern(-) lcolor(gs8)) (line xaxis semester, lwidth(vthin) lcolor(gs8)) if semester > -4, xline(0) legend(off) title("") xtitle("Semester")
 
 graph export ${tables}timeline_`var'.eps, replace
 shell epstopdf ${tables}timeline_`var'.eps
