@@ -11,11 +11,11 @@ use ${stash}panelfips, clear
 gen semester = hofd(dofm(month))
 format semester %th
 
-eststo: xtpoisson numuser 1.treat##b2007.year if month > 550, fe vce(robust)
-estimates save ${myestimates}dd_numuser, replace
-
 eststo: xtpoisson numuser 1.treat##b95.semester, fe vce(robust)
 estimates save ${myestimates}dd_numuser, replace
+
+eststo: xtpoisson numcontrib 1.treat##b95.semester, fe vce(robust)
+estimates save ${myestimates}dd_contrib, replace
 
 
 drawchart numuser 2006
