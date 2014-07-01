@@ -64,6 +64,12 @@ dd_simple "`outcomes'" run xtreg
 dd_simple "`outcomes'" run xtpoisson
 dd_simple "`outcomes'" write ddsimple_additional
 
+// 3.5 Diff in Diff Picture
+ddchart numuser
+ddchart numcontrib
+ddchart numserious90
+
+
 // 4. How do results vary?
 program drop _all
 use ${stash}panelfips, clear
