@@ -37,8 +37,49 @@ makehist educ_college kdensity "Num. College Educated"
 
 ** makehist region hist
 
+// 2. TODO: TTest or regressions treatment / control
+
+//  3.1 Meanline charts (raw data) 
+makemeanline numcontrib quarter 2011 "Contributions"
+makemeanline numuser quarter 2011 "Users"
+makemeanline numserious90 quarter 2011 "Super Users"
+
+* makemeanline numnewusers quarter 2011 "New Users"
+* makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
+* makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
+* makemeanline numchanges quarter 2011 "Changes"
+
+// 3.2 Cross Sectional Regressions
+crossreg
+
+// 3.3 Diff in Diff --- Baseline
+local outcomes "numcontrib numuser numserious90"
+dd_simple "`outcomes'" run xtreg
+dd_simple "`outcomes'" run xtpoisson
+dd_simple "`outcomes'" write ddsimple_baseline
+
+// 3.4 Diff in Diff --- Additional
+local outcomes "numnewusers numnewusers6 numnewusers90"
+dd_simple "`outcomes'" run xtreg
+dd_simple "`outcomes'" run xtpoisson
+dd_simple "`outcomes'" write ddsimple_additional
+
+// 4. How do results vary?
+program drop _all
+use ${stash}panelfips, clear
+gen large = (cntypop > 100000)
+
+diffindiff2 large LARGE hetero1 run numcontrib
+
+numuser numserious90 numnewusers6
+
+diffindiff2 large LARGE tab_4.1 write numcontrib numuser numserious90 numnewusers6
 
 
+
+
+
+////////// OLD // 
  ** Analysis 
 
 // 0. Data
@@ -67,14 +108,6 @@ save ${stash}panelway, replace
 
 // 3. Baseline effects (xtpoisson, cluster at unit level)
 
-//  3.1 Meanline charts (raw data) 
-makemeanline numchanges quarter 2011 "Changes"
-makemeanline numcontrib quarter 2011 "Contributions"
-makemeanline numuser quarter 2011 "Users"
-makemeanline numserious90 quarter 2011 "Super Users"
-makemeanline numnewusers quarter 2011 "New Users"
-makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
-makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
 
 // 3.2 FIPS Sample -- DD
 
