@@ -9,6 +9,7 @@ local num "50"
 bysort fips: gen tag = (_n==1)
 gen tmp = .
 
+// generate the median vars
 foreach x in `vars'{
     di "`x'"
     egen p`num' = pctile(`x') if tag == 1, p(`num')
@@ -17,11 +18,13 @@ foreach x in `vars'{
     drop p`num' p_tmp
 }
 
-
-program drop diffindiff2
+// run regressions
 foreach x in `vars'{
-    diffindiff2 p`num'_`x' AboveMedian hetero1 run `outcomes'
+    run_reg p`num'_`x'
 }
+
+local x cntypop
+run_reg 
 
 est clear
 foreach x in `vars'{
@@ -35,6 +38,7 @@ write_reg
 program run_reg
 
 local var `1'
+di "`var'"
 replace tmp = `var'
 
 est clear
@@ -52,18 +56,18 @@ local var `3'
 di "`t', `var'"
 local bb "${myestimates}`tabname'_fips_`t'_`var'"
 di "`bb'"
-estimates use ${myestimates}`tabname'_fips_`t'_`var'
+**estimates use ${myestimates}`tabname'_fips_`t'_`var'
+estimates use ${myestimates}hetero1_`var'
 estadd local unitfe "Yes", replace
 estadd local monthfe "Yes", replace
 eststo est`var'
 end
 
-
 program write_reg
 
 local var tmp
 
-esttab using "${tables}hetero1.tex", keep(1.treat#1.post 1.post#1.`var' 1.treat#1.post#1.`var' 1.post) order(1.treat#1.post#1.`var' 1.treat#1.post 1.post#1.`var' 1.post) se ar2 nonotes replace booktabs  s(unitfe monthfe N N_g, label("County FE" "Month FE" "N" "Clusters")) coeflabels(1.treat#1.post#1.`var' "TIGER X POST X AboveMedian" 1.treat#1.post "TIGER X POST" 1.post#1.`var' "POST X AboveMedian" 1.post "Post") mtitles("Population" "Pop. Density" "Earnings" "PercentWhite" "Age" "College" "" )
+esttab using "${tables}hetero1.tex", keep(1.post#1.treat 1.post#1.`var' 1.post#1.treat#1.`var' 1.post) order(1.post#1.treat#1.`var' 1.post#1.treat 1.post#1.`var' 1.post) se ar2 nonotes replace booktabs  s(unitfe monthfe N N_g, label("County FE" "Year FE" "N" "Clusters")) coeflabels(1.post#1.treat#1.`var' "TIGER X POST X AboveMedian" 1.post#1.treat "TIGER X POST" 1.post#1.`var' "POST X AboveMedian" 1.post "POST") mtitles("Population" "Pop. Density" "Earnings" "PercentWhite" "Age" "College" "" )
 
 end   
     
