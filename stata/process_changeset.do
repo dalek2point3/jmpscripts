@@ -34,7 +34,6 @@ makehist cntypop kdensity "Population"
 makehist emp_earnings kdensity "Earnings"
 makehist age_median kdensity "Median Age"
 makehist educ_college kdensity "Num. College Educated"
-
 ** makehist region hist
 
 // 2. TODO: TTest or regressions treatment / control
@@ -72,6 +71,13 @@ ddchart numserious90
 // 4. How do results vary?
 // takes a while
 makehetero
+
+// 5. Individual Level Regressions
+makeperson
+
+
+ddperson maketables
+ddperson makechart
 
 
 
@@ -242,9 +248,6 @@ preparecl
 
  ** person level regressions
  // person level
- makeperson
- ddperson maketables
- ddperson makechart
 
 
 // TODOs for Tuesday Jun 3

@@ -1,5 +1,9 @@
 program makeperson
-use ${stash}mergemaster1, clear
+
+use ${stash}cleanchangeset1, clear
+
+drop if fips == "NA"
+merge m:1 fips using ${stash}cleancnty, keep(master match) nogen keepusing(treat state)
 
 gen tmp = 1
 replace tmp = . if month > mofd(date("10-1-2007","MDY"))
@@ -16,6 +20,8 @@ genvar
 balance
 
 replace treat = (treat > 0.2)
+
+mergebasic
 
 save ${stash}paneluid, replace
 
@@ -64,7 +70,7 @@ destring uid, gen(unitid)
 bysort unitid month: drop if _n > 1
 
 // clean county level vars
-drop change num_changes lat lon fips geoid10 tstamp* region division state cnty* stname county color ua* 
+** drop change num_changes lat lon fips geoid10 tstamp* region division state cnty* stname county color ua* 
 
 // fill in zeros
 tsset unitid month
@@ -81,7 +87,7 @@ foreach x in `outcomes'{
 }
 
 ** fill in the covariates
-local covars "user treat firstmonth"
+local covars "user treat firstmonth state"
 
 foreach x in `covars'{
     gsort unitid month
@@ -103,10 +109,3 @@ xtset unitid month
 
 end
 
-
-program runreg
-
-diffindiff `model' `dv' `unit' `cutoff' `mode'
-
-
-end
