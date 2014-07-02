@@ -54,9 +54,10 @@ di "----"
 di "var: `var', tab: `tabname'"
 di "----"
 
+replace tmp = `var'
 save ${stash}tmp, replace
 
-local command "xtpoisson `t' 1.post 1.treat#1.post 1.post#1.`var' 1.treat#1.post#1.`var' i.year"
+local command "xtpoisson `t' 1.post 1.treat#1.post 1.post#1.tmp 1.treat#1.post#1.tmp i.year"
 
 di "now running for `t'"
 di "--"

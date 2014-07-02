@@ -1,8 +1,10 @@
+program makehetero
+
 use ${stash}panelfips, clear
 
 gen popdens = (cntypop / aland_sqmi)
 
-local vars "cntypop popdens emp_earnings percent_white age_median educ_college"
+local vars "cntypop popdens emp_earnings percent_white age_median educ_college emp_computer"
 
 local outcomes "numuser"
 local num "50"
@@ -23,9 +25,6 @@ foreach x in `vars'{
     run_reg p`num'_`x'
 }
 
-local x cntypop
-run_reg 
-
 est clear
 foreach x in `vars'{
     di "`x'"
@@ -33,7 +32,10 @@ foreach x in `vars'{
     di "-----------"
 }
 
-write_reg
+write_reg Top10Ptile
+
+
+end
 
 program run_reg
 
@@ -63,11 +65,13 @@ estadd local monthfe "Yes", replace
 eststo est`var'
 end
 
+
 program write_reg
 
 local var tmp
+local num `1'
 
-esttab using "${tables}hetero1.tex", keep(1.post#1.treat 1.post#1.`var' 1.post#1.treat#1.`var' 1.post) order(1.post#1.treat#1.`var' 1.post#1.treat 1.post#1.`var' 1.post) se ar2 nonotes replace booktabs  s(unitfe monthfe N N_g, label("County FE" "Year FE" "N" "Clusters")) coeflabels(1.post#1.treat#1.`var' "TIGER X POST X AboveMedian" 1.post#1.treat "TIGER X POST" 1.post#1.`var' "POST X AboveMedian" 1.post "POST") mtitles("Population" "Pop. Density" "Earnings" "PercentWhite" "Age" "College" "" )
+esttab using "${tables}hetero1_`num'.tex", keep(1.post#1.treat 1.post#1.`var' 1.post#1.treat#1.`var' 1.post) order(1.post#1.treat#1.`var' 1.post#1.treat 1.post#1.`var' 1.post) se ar2 nonotes replace booktabs  s(unitfe monthfe N N_g, label("County FE" "Year FE" "N" "Clusters")) coeflabels(1.post#1.treat#1.`var' "TIGER X POST X `num'" 1.post#1.treat "TIGER X POST" 1.post#1.`var' "POST X `num'" 1.post "POST") mtitles("Pop." "Pop. Density" "Earnings" "PercentWhite" "Age" "College" "Computer" )
 
 end   
     

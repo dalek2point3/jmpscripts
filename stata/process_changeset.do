@@ -69,15 +69,9 @@ ddchart numuser
 ddchart numcontrib
 ddchart numserious90
 
-
 // 4. How do results vary?
-program drop _all
-use ${stash}panelfips, clear
-gen large = (cntypop > 100000)
-
-local outcomes "numcontrib numuser numserious90"
-diffindiff2 large LARGE hetero1 run `outcomes'
-diffindiff2 large LARGE hetero1 write `outcomes'
+// takes a while
+makehetero
 
 
 
