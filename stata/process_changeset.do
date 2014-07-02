@@ -74,9 +74,10 @@ makehetero
 
 // 5. Individual Level Regressions
 makeperson
-
-
 ddperson maketables
+
+
+
 ddperson makechart
 
 
