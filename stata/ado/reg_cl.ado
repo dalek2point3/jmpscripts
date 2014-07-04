@@ -4,7 +4,11 @@ makechange_cl
 makebugs
 
 run_reg_map
+run_reg_bugs
+load_reg
+write_reg
 
+end
 
 program run_reg_bugs
 
@@ -13,11 +17,8 @@ use ${clist}bugs, clear
 bysort fips: gen bugs = _N
 bysort fips: drop if _n > 1
 
-gen percent = closed / (closed + open)
 gen c2 = cntypop^2
-
 gen hi_comp = (emp_comp > 20000)
-
 label variable bugs "Bugs"
 
 est clear

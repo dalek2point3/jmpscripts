@@ -75,13 +75,12 @@ makehetero
 // 5. Individual Level Regressions
 makeperson
 ddperson maketables
-
-
-
 ddperson makechart
 
+// 6. Map Quality
 
-
+// 7. Craiglist
+reg_cl
 
 
 
