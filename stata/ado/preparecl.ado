@@ -1,3 +1,5 @@
+program preparecl
+
 insheet using ${clist}areas_geo.tsv, clear
 rename v1 state
 rename v2 areaname
@@ -36,5 +38,5 @@ merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
 
 save ${clist}mergemaster1_cl, replace
 
-
+end
 
