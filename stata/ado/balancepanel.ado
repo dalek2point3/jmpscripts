@@ -44,7 +44,7 @@ if "`mode'" == "way"{
 drop change uid lat lon tstamp* minmonth nummonth numusercontrib 
 
 ** fill in zeros if missing DVs are present
-local outcomes "numhighway numbuilding numamenity numparking numways numnontiger numtiger numclass1 numclass2 numclass3 numclass4"
+local outcomes "numhighway numbuilding numamenity numparking numways numnontiger numtiger numclass1 numclass2 numclass3 numclass4 numattrib numattrib1 numattrib2 numattrib3 numattrib4"
 
 label variable numhighway "Highways"
 label variable numbuilding "Buildings"
@@ -57,6 +57,8 @@ label variable numclass1 "Class 1"
 label variable numclass2 "Class 2"
 label variable numclass3 "Class 3"
 label variable numclass4 "Class 4"
+label variable numattrib "HasAttrib"
+
 
 }
 

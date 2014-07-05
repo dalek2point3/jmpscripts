@@ -23,6 +23,28 @@ mergebasic
 qui destring, replace
 save ${stash}panelfips, replace
 
+// 0.3 make node and way datasets
+preparenode
+
+use ${stash}mergemaster_node, clear
+makedv fips node
+balancepanel fips node
+save ${stash}panelnode, replace
+
+// 0.3 make way dataset
+prepareway
+
+use ${stash}way_stash, clear
+makedv fips way
+save ${stash}mergemaster_node, replace
+
+use ${stash}mergemaster_node, clear
+balancepanel fips way
+merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
+save ${stash}panelway, replace
+
+
+
 // 1. Summary Stats
 program drop _all
 use ${stash}panelfips, clear
@@ -78,6 +100,15 @@ ddperson maketables
 ddperson makechart
 
 // 6. Map Quality
+
+// 6.1 Street data completeness
+
+
+// 6.2 Other layers
+reg_layers
+
+// 6.3 Highway level regressions
+
 
 // 7. Craiglist
 reg_cl
