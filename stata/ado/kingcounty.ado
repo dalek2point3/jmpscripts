@@ -12,9 +12,17 @@ program run_reg
 sort unitid month
 format firstm %tm
 
+gen treat = (fips=="06047")
+keep if treat == 1
+
 bysort istiger month: egen newadded = total(month==firstmonth)
 bysort istiger month: egen numupdated = total(numchanges>0)
 bysort istiger month: egen avgattr = mean(hasattr)
+bysort istiger month: egen avguser = mean(numusers)
+bysort istiger month: egen avgowner = mean(numowner)
+bysort istiger month: egen totowner = total(numowner)
+bysort istiger month: egen didowner = total((numowner>0))
+
 
 bysort istiger month: gen tag = (_n==1)
 
@@ -30,6 +38,9 @@ gen percentupdated = numupd / newa_sum
 list newadd newa_ numupd month istiger if month == 621 & tag == 1
 
 
+local var didown
+local var avgown
+local var totown
 local var newa
 local var newa_sum
 local var numupd
@@ -37,12 +48,12 @@ local var avgattr
 local var percentup
 
 
-replace `var' = 1200 if `var' > 1200
+replace `var' = 10 if `var' > 10
 
 tw (connected `var' month if istiger == 0 & tag==1) (connected `var' month if istiger == 1 &tag==1), legend(order(2 "TIGER Counties" 1 "Control Counties" )) 
 
 graph export ${tables}tmp1.eps, replace
-
+ 
 codebook 
 
 end
@@ -59,6 +70,12 @@ keep if highwayclass == 3
 bysort highwayid month: gen numchanges = _N
 bysort highwayid month: egen maxattrib = max(hasattrib)
 bysort highwayid: gen firstmonth = month[1]
+bysort highwayid: gen firstuser = user[1]
+bysort highwayid month: egen numowner = total(firstuser==user)
+
+bysort highwayid month user: gen tmp = (_n==1)
+bysort highwayid month: egen numusers = total(tmp)
+drop tmp
 
 end
 
@@ -71,14 +88,14 @@ gen unitid = highwayid
 tsset unitid month
 tsfill, full
 
-local outcomes "numchanges maxattrib"
+local outcomes "numchanges maxattrib numowner numusers"
 
 foreach x in `outcomes'{
     replace `x' = 0 if `x' == .
 }
 
 
-local covars "istiger firstmonth name hasattr"
+local covars "istiger firstmonth name hasattr fips"
 
 foreach x in `covars'{
     gsort unitid month
