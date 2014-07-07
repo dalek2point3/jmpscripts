@@ -3,8 +3,21 @@ insheet using ${rawhist}way_gc.csv, clear
 renamevar
 cleanvar
 droplargeuser
+mergevar
 
 save ${stash}way_stash, replace
+
+** save ${stash}way_stash2, replace
+**use ${stash}way_stash, clear
+
+
+program mergevar
+
+drop if fips == "NA"
+merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
+merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
+
+end
 
 
 
@@ -52,7 +65,7 @@ drop if user == "TIGERcnl"
 drop if user == "canvec_fsteggink"
 drop if user == "OSMF Redaction Account"
 drop if user == "bot-mode"
-drop if user == "Milenko" & istiger == 1
+drop if user == "Milenko"
 
 end
 

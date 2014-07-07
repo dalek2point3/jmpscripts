@@ -36,9 +36,9 @@ prepareway
 
 use ${stash}way_stash, clear
 makedv fips way
-save ${stash}mergemaster_node, replace
+save ${stash}mergemaster_way, replace
 
-use ${stash}mergemaster_node, clear
+use ${stash}mergemaster_way, clear
 balancepanel fips way
 merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
 save ${stash}panelway, replace
