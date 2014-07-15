@@ -5,7 +5,7 @@ merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
 
 merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
 
-merge m:1 fips year using ${rawmaps}county_pop, keep(master match)
+merge m:1 fips year using ${rawmaps}county_pop, keep(master match) nogen
 
 labelvar
 

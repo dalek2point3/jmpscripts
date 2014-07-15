@@ -17,8 +17,8 @@ preparebasic
 
 // 0.2 make relevant dependent variables
 use ${stash}cleanchangeset1, clear
-makedv fips
-balancepanel fips
+makedv_uid fips quarter
+balancepanel_uid fips
 mergebasic
 qui destring, replace
 save ${stash}panelfips, replace
@@ -44,19 +44,18 @@ merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
 save ${stash}panelway, replace
 
 
-
 // 1. Summary Stats
 program drop _all
 use ${stash}panelfips, clear
-label variable treat "1(TIGER)"
-label variable cntypop "Population"
-label variable year "Year"
-label variable age_median "Median Age"
-label variable emp_earnings "Earnings"
-label variable num_households "Households"
-local vars "treat year cntypop emp_earnings age_median num_households numcontrib numuser numserious90 numnewusers numnewusers6 numnewusers90"
+
 global tabname "summary"
+local vars "treat aland_sqmi emp_earnings age_median num_households educ_college emp_computer"
+
+local vars "treat year cntypop emp_earnings age_median num_households numcontrib numuser numserious18 numnewusers numnewusers6 numnewusers90"
+
+
 makesummary "`vars'"
+
 
 // 2. Treatment Control Balance
 use ${stash}panelfips, clear

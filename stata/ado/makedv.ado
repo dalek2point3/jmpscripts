@@ -3,7 +3,6 @@ program makedv
 local unit `1'
 local mode `2'
 
-
 drop if `unit' == "NA"
 
 egen unitid = group(`unit')

@@ -63,12 +63,23 @@ drop tmp1
 
 // new committed users
 foreach num of numlist 2 3 6 {
-    di "numnewusers`num'"
+    di "numnewusers_t`num'"
     bysort `unit' time uid: gen tmp1 = (_n==1) * (time==mintime) * (numtime >= 6)
-    bysort `unit' time: egen numnewusers`num' = total(tmp1)
-    label variable numnewusers`num' "New Users (`num')"
+    bysort `unit' time: egen numnewusers_t`num' = total(tmp1)
+    label variable numnewusers_t`num' "New Users (`num')"
     drop tmp1
 }
+
+// new super users
+foreach num of numlist 18 56 {
+    di "numserious_c`num'"
+    bysort `unit' time uid: gen tmp1 = (_n==1) * (time==mintime) * (numuserc >= `num')
+    bysort `unit' time: egen numnewusers_c`num' = total(tmp1)
+    label variable numnewusers_c`num' "New Users (`num')"
+    drop tmp1
+}
+
+
 
 // new first time users in unit
 di "numfirstseen"
