@@ -45,7 +45,7 @@ bysort fips: replace year = 2014 if year == . & _n == 10
 bysort fips: ipolate pop_year year, gen (y2) epolate
 replace pop_year = y2 if pop_year == .
 
-drop tmp
+drop tmp y2
 
 end
 
