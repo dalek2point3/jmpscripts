@@ -151,10 +151,21 @@ format month %tm
 drop if abs(min_lat - max_lat) > 1
 drop if abs(min_lon - max_lon) > 1
 
+find_nonus
+
 // drop non-US changesets
 drop if fips == "NA" & geoid10 == "NA"
 
 drop open closed_at created_at min_* max_* 
 
 end
+
+program find_nonus
+
+sort uid tstamp
+bysort uid: egen nonus = total(fips=="NA" & geoid10=="NA")
+bysort uid: egen nonus10 = total((fips=="NA" & geoid10=="NA") & _n < 11)
+
+end
+
 

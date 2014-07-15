@@ -58,6 +58,10 @@ label variable numclass2 "Class 2"
 label variable numclass3 "Class 3"
 label variable numclass4 "Class 4"
 label variable numattrib "HasAttrib"
+label variable numattrib1 "HasAttrib1"
+label variable numattrib2 "HasAttrib2"
+label variable numattrib3 "HasAttrib3"
+label variable numattrib4 "HasAttrib4"
 
 
 }

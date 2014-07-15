@@ -152,7 +152,7 @@ bysort `unit' month: egen numattrib = total(hasattrib)
 
 //attrib by class
 forvalues x = 1/4{
-    bysort `unit' month: egen numclass`x' = total(ishighway*(highwayclass==`x'))
+    bysort `unit' month: egen numattrib`x' = total(ishighway*(highwayclass==`x')*(hasattrib==1))
 }    
 
 

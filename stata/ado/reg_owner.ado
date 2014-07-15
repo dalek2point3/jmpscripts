@@ -31,6 +31,7 @@ drop tmp
 reg numchanges istiger##treat i.year, robust
 
 eststo: xtreg nonowner istiger##treat i.year, robust
+
 eststo: xtreg numchanges istiger##treat i.year, robust
 
 

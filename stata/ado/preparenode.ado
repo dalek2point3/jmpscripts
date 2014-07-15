@@ -7,18 +7,8 @@ mergevar
 
 save ${stash}mergemaster_node, replace
 
-program makenodevar
-
-use ${stash}mergemaster_node, clear
-
-makedv fips node
-
-program drop _all
 
 
-
-
-end
 
 
 program mergevar
