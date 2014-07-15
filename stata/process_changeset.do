@@ -48,7 +48,15 @@ save ${stash}panelway, replace
 // 1. Summary Stats
 program drop _all
 use ${stash}panelfips, clear
-makesummary
+label variable treat "1(TIGER)"
+label variable cntypop "Population"
+label variable year "Year"
+label variable age_median "Median Age"
+label variable emp_earnings "Earnings"
+label variable num_households "Households"
+local vars "treat year cntypop emp_earnings age_median num_households numcontrib numuser numserious90 numnewusers numnewusers6 numnewusers90"
+global tabname "summary"
+makesummary "`vars'"
 
 // 2. Treatment Control Balance
 use ${stash}panelfips, clear
@@ -94,12 +102,51 @@ ddchart numserious90
 // takes a while
 makehetero
 
-// 5. Individual Level Regressions
+// 5. Individual Level Data
+
+// 5.0 create data
 makeperson
+
+//5.1 Summary
+use ${stash}paneluid, clear
+
+label variable treat "TIGER"
+label variable year "YEAR"
+label variable numcontrib "Contribs"
+label variable numcontrib_home "Home County"
+label variable numcontrib_treat "TIGER"
+label variable numcontrib_notreat "Non-TIGER"
+label variable numcontrib_statenotreat "State(Control)"
+label variable numcounties "Num. Counties"
+
+local vars "treat year numcontrib numcontrib_home numcontrib_treat numcontrib_notreat numcontrib_statenotreat numcounties"
+global tabname "summary_uid"
+makesummary "`vars'"
+
+//Regressions
 ddperson maketables
 ddperson makechart
 
 // 6. Map Quality
+
+//6.0 summary
+use ${stash}panelotherlayers, clear
+
+label variable treat "TIGER"
+label variable year "Year"
+label variable otherlayer "NonStreet Layers"
+label variable amenities "Amenities"
+label variable bld_addr "Building/Addresses"
+label variable numclass4 "Trails/Bikepaths"
+
+label variable numattrib1 "Attributes:Major Highway"
+label variable numattrib2 "Attributes:Class2"
+label variable numattrib3 "Attributes:Class3"
+label variable numattrib4 "Attributes:Trails etc."
+
+local vars "treat year otherlayer amenities bld_addr numclass4 numattrib1 numattrib2 numattrib3 numattrib4"
+global tabname "summary_otherl"
+makesummary "`vars'"
 
 // 6.1 Street data completeness
 
