@@ -46,7 +46,6 @@ balancepanel fips way
 merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
 save ${stash}panelway, replace
 
-
 // 1. Summary Stats
 // Panel A: By county Level
 program drop _all
@@ -68,7 +67,6 @@ makehist cntypop kdensity "Population"
 makehist emp_earnings kdensity "Earnings"
 makehist age_median kdensity "Median Age"
 makehist educ_college kdensity "Num. College Educated"
-** makehist region hist
 
 // 2. TODO: TTest or regressions treatment / control
 
@@ -88,10 +86,12 @@ dd_simple "`outcomes'" write ddsimple_baseline
 
 
 // 3.4 Diff in Diff --- Additional
-local outcomes "numnewusers numnewusers6 numnewusers90"
+local outcomes "numnewusers numnewusers_t2 numnewusers90"
 dd_simple "`outcomes'" run xtreg
 dd_simple "`outcomes'" run xtpoisson
 dd_simple "`outcomes'" write ddsimple_additional
+
+
 
 // 3.5 Diff in Diff Picture
 ddchart numuser

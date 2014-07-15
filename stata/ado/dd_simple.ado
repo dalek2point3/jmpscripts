@@ -46,9 +46,10 @@ foreach x in `outcomes'{
     
     local model xtpoisson
     eststo: qui `model' `x' 1.treat#1.post i.time pop_year, fe vce(robust)
-    estadd local countyfe "Yes", replace
-    estadd local monthfe "Yes", replace
-    estimates save ${tables}ddsimple_`x'_`model', replace
+    qui estadd local countyfe "Yes", replace
+    qui estadd local monthfe "Yes", replace
+    qui estimates save ${tables}ddsimple_`x'_`model', replace
+    di "Just wrote `model' for `x'"
 }
     
 end
@@ -62,8 +63,8 @@ local filename `2'
 foreach x in `outcomes'{
     foreach y in reg xtreg xtpoisson{
         di "`x' : `y'"
-        estimates use ${tables}ddsimple_`x'_`y'
-        eststo est`x'_`y'
+        qui estimates use ${tables}ddsimple_`x'_`y'
+        qui eststo est`x'_`y'
     }
 }
 
