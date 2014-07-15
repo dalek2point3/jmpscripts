@@ -81,13 +81,6 @@ foreach x in `outcomes'{
 
 fillcovars
 
-// generate new vars
-gen post =  month > mofd(date("10-1-2007","MDY"))
-
-gen post =  month > mofd(date("10-1-2007","MDY"))
-
-gen year = year(dofm(month))
-
 drop user 
 
 gsort unitid month
@@ -96,13 +89,10 @@ xtset unitid month
 end
 
 
-
 program fillcovars
 
 ** fill in the covariates
-** local covars "fips geoid10 region division state county stname cntyname cntypop color treat uaname uapop uahu uaarea uapopden uaclus age_median percent_male percent_white num_house age_y age_mid age_old emp_earn emp_busi emp_comp educ_college educ_college_p educ_grad educ_grad_p aland_sq"
-
-local covars "fips geoid10"
+local covars "fips geoid10 year post"
 
 foreach x in `covars'{
     gsort unitid month
