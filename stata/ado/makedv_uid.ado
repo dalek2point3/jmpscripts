@@ -73,7 +73,6 @@ foreach num of numlist 18 56 {
 }
 
 
-
 // new first time users in unit
 di "numfirstseen"
 sort `unit' uid time
@@ -81,12 +80,25 @@ bysort `unit' uid: gen tmp1 = (_n==1)
 bysort `unit' time: egen numfirstseen = total(tmp1)
 drop tmp1
 
+// e) Non US Users
+
+// Non US users above a certain threshold for first edits
+foreach num of numlist 10 20 100 {
+    di "nonus`num'"
+    bysort `unit' time uid: gen tmp = (_n==1)*(nonus`num' > `num' - 2)
+    bysort `unit' time: egen numnonus`num' = total(tmp)
+    label variable numnonus`num' "Int. Users (`num'+)"
+    drop tmp
+}
+
 // create labels
 label variable numchanges "Changes"
 label variable numcontrib "Contrib"
 label variable numusers "Users"
 label variable numnewusers "New Users"
 label variable numfirstseen "News Users(F)"
+
+
 
 di "**** **** **** **** **** **** "
 

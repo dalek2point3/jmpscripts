@@ -17,6 +17,7 @@ clear
 preparebasic
 
 // 0.2 make relevant dependent variables
+program drop _all
 use ${stash}cleanchangeset1, clear
 makedv_uid fips
 balancepanel_uid fips

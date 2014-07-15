@@ -69,7 +69,7 @@ foreach x in `outcomes'{
 
 
 
-esttab using "${tables}`filename'.tex", keep(1.treat#1.post 1.treat) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat "Treat" 1.treat#1.post "Post X Treat"  _cons "Constant") replace booktabs s(countyfe monthfe monthfe N N_g, label("County FE" "Year FE" "Population" "N" "Clusters")) label mgroups("OLS" "OLS" "Poisson QMLE" "OLS" "OLS" "Poisson QMLE" , pattern(1 1 1 1 1 1)) mtitles("Ln(Contrib)" "Ln(Contrib)" "Contrib" "Ln(Contrib)" "Ln(Contrib)" "Contrib")
+esttab using "${tables}`filename'.tex", keep(1.treat#1.post 1.treat) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat "Treat" 1.treat#1.post "Post X Treat"  _cons "Constant") replace booktabs s(countyfe monthfe monthfe N N_g, label("County FE" "Year FE" "Population" "N" "Clusters")) label mgroups("OLS" "OLS" "Poisson QMLE" "OLS" "OLS" "Poisson QMLE" , pattern(1 1 1 1 1 1)) mtitles("Ln(Contrib)" "Ln(Contrib)" "Contrib" "Ln(Users)" "Ln(Users)" "Users")
 
 end
 
