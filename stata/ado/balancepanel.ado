@@ -83,6 +83,9 @@ fillcovars
 
 // generate new vars
 gen post =  month > mofd(date("10-1-2007","MDY"))
+
+gen post =  month > mofd(date("10-1-2007","MDY"))
+
 gen year = year(dofm(month))
 
 drop user 

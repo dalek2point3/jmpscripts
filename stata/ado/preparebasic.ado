@@ -1,4 +1,6 @@
 /// 0. program lib for prepare basic data
+// THIS PROGRAM MAKES THE CHANGESET FILE
+// AND THE CLEAN COUNTY FILE
 
 program preparebasic
 
@@ -28,16 +30,20 @@ drop fips
 rename fips2 fips
 save ${stash}countylookup, replace
 
-// 0.3.2 clean related county data == census (race, pop)
+// 0.3.2.1 clean related county data == census (race, pop)
 census_pop
 
-// 0.3.3 clean related countt data == acs (educ, income etc)
+// 0.3.2.2 make annual population file (seer data)
+county_pop
+
+// 0.3.3 clean related county data == acs (educ, income etc)
 acs_pop
 
-// 0.3.4 area
+// 0.3.4 area (adds land area for county)
 savearea
 
-// 0.3.2 clean county data and merge
+// 0.3.5 clean county data and merge
+
 insheet using ${rawmaps}CO-EST2012-Alldata.csv, clear
 cleancnty
 

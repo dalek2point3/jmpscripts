@@ -79,6 +79,13 @@ bysort `unit' month uid: gen tmp1 = (_n==1) * (month==minmonth) * (numuserc >= 1
 bysort `unit' month: egen numnewusers90 = total(tmp1)
 drop tmp1
 
+// users at different level
+di "numnewusers90"
+bysort `unit' month uid: gen tmp1 = (_n==1) * (month==minmonth) * (numuserc >= 18)
+bysort `unit' month: egen numnewusers90 = total(tmp1)
+drop tmp1
+
+
 // new first time users in unit
 di "numfirstseen"
 sort `unit' uid month
