@@ -8,6 +8,7 @@ cd ${path}
 
 // this declares global vars
 declare_global
+global time "quarter"
 
 // 0. Data
 
@@ -17,8 +18,9 @@ preparebasic
 
 // 0.2 make relevant dependent variables
 use ${stash}cleanchangeset1, clear
-makedv_uid fips quarter
+makedv_uid fips
 balancepanel_uid fips
+maketime
 mergebasic
 qui destring, replace
 save ${stash}panelfips, replace
@@ -45,17 +47,19 @@ save ${stash}panelway, replace
 
 
 // 1. Summary Stats
+// Panel A: By county Level
 program drop _all
 use ${stash}panelfips, clear
-
-global tabname "summary"
-local vars "treat aland_sqmi emp_earnings age_median num_households educ_college emp_computer"
-
-local vars "treat year cntypop emp_earnings age_median num_households numcontrib numuser numserious18 numnewusers numnewusers6 numnewusers90"
-
-
+bysort fips: drop if _n > 1
+global tabname "summary_county"
+local vars "treat aland_sqmi emp_earnings age_median educ_college emp_computer"
 makesummary "`vars'"
 
+// Panel B: By county/time Level
+use ${stash}panelfips, clear
+global tabname "summary_panel"
+local vars "year pop_year numcontrib numusers numnewusers numserious18 numnewusers_t2 numnewusers_c18"
+makesummary "`vars'"
 
 // 2. Treatment Control Balance
 use ${stash}panelfips, clear
@@ -68,14 +72,9 @@ makehist educ_college kdensity "Num. College Educated"
 // 2. TODO: TTest or regressions treatment / control
 
 //  3.1 Meanline charts (raw data) 
-makemeanline numcontrib quarter 2011 "Contributions"
-makemeanline numuser quarter 2011 "Users"
-makemeanline numserious90 quarter 2011 "Super Users"
-
-* makemeanline numnewusers quarter 2011 "New Users"
-* makemeanline numnewusers6 quarter 2011 "New Users (Stay for 6+ Months)"
-* makemeanline numnewusers90 quarter 2011 "New Users (who become super users)"
-* makemeanline numchanges quarter 2011 "Changes"
+makemeanline numcontrib time 2011 "Contributions"
+makemeanline numusers time 2011 "Users"
+makemeanline numserious18 time 2011 "Super Users"
 
 // 3.2 Cross Sectional Regressions
 crossreg
