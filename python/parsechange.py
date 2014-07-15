@@ -73,6 +73,7 @@ def main():
     ## this is where you put the path to the changesets file
     with open("/mnt/nfs6/wikipedia.proj/jmp/rawdata/osmchange/changesets-latest.osm") as f:
         bbox = [-125, 24.34, -66.9, 49.4]
+        bbox = [-200, -200, 200, 200]
         parseFile(f, bbox)
 
 if __name__ == '__main__':

@@ -66,6 +66,8 @@ def geocode(line):
     # latid = 'v3'
     # lonid = 'v4'
 
+    bbox = [-125, 24.34, -66.9, 49.4]
+
     latid = 'lat'
     lonid = 'lon'
 
@@ -76,14 +78,14 @@ def geocode(line):
     except ValueError:
         return line
 
-    line['fips']= check(pt_lon, pt_lat, "cty")
-    line['geoid10']= check(pt_lon, pt_lat, "msa")
+    if (pt_lon > bbox[0] and pt_lon < bbox[2] and pt_lat > bbox[1] and pt_lat < bbox[3]):
+        line['fips']= check(pt_lon, pt_lat, "cty")
+        line['geoid10']= check(pt_lon, pt_lat, "msa")
+    else:
+        line['fips'] = "I"
+        line['geoid10'] = "I"
 
     return line
-
-    # if line['fips'] == '' :
-    # if line['geoid10'] == '' :
-
 
 def main(pointfile, outfilestub, startflag=0, step=10):
 
@@ -109,7 +111,7 @@ def main(pointfile, outfilestub, startflag=0, step=10):
 
             for line in csvreader:
                 count += 1
-                if count < startflag + step:
+                if count <= startflag + step:
 
                     # if line['class'] == "both":
                     #    pass

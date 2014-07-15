@@ -5,7 +5,9 @@
 #$ -q all.q
 
 #$ -l rh6=TRUE
-#$ -t 1-185
+#$ -t 1-2160
+
+# 2160 is upper limit
 
 source /mnt/nfs6/wikipedia.proj/gdalvenv/bin/activate
 export LD_LIBRARY_PATH=/mnt/nfs6/wikipedia.proj/gdalvenv/lib:$LD_LIBRARY_PATH
