@@ -6,6 +6,7 @@ program preparebasic
 
 // 0.1 clean changeset data
 insheet using ${osmchange}changesets-geocoded.csv, clear
+insheet using ${osmchange}world-geocode.csv, clear
 renamevar
 cleanvar
 droplargeuser
@@ -161,6 +162,7 @@ find_nonus
 
 // drop non-US changesets
 drop if fips == "NA" & geoid10 == "NA"
+drop if fips == "I"
 
 drop open closed_at created_at min_* max_* 
 
@@ -169,8 +171,14 @@ end
 program find_nonus
 
 sort uid tstamp
-bysort uid: egen nonus = total(fips=="NA" & geoid10=="NA")
-bysort uid: egen nonus10 = total((fips=="NA" & geoid10=="NA") & _n < 11)
+gen tmp = (fips=="NA" & geoid10=="NA")
+replace tmp = 1 if fips == "I"
+
+bysort uid: egen nonus = total(tmp)
+bysort uid: egen nonus10 = total(tmp & _n < 11)
+bysort uid: egen nonus20 = total(tmp & _n < 21)
+bysort uid: egen nonus100 = total(tmp & _n < 101)
+drop tmp
 
 end
 
