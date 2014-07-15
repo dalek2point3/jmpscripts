@@ -8,19 +8,12 @@ di "**** **** **** **** **** **** "
 *local time quarter
 
 local unit `1'
-local time `2'
 
 drop if `unit' == "NA"
 
 gen quarter = qofd(dofm(month))
 format quarter %tq
-gen year = year(dofm(month))
-gen time = `time'
-
-gen postmonth =  month > mofd(date("10-1-2007","MDY"))
-gen postquarter =  quarter > qofd(date("10-1-2007","MDY"))
-
-gen post = post`time'
+gen time = ${time}
 
 egen unitid = group(`unit')
 
