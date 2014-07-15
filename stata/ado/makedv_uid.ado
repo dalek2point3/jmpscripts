@@ -55,16 +55,16 @@ bysort `unit' time: egen numnewusers = total(tmp1)
 drop tmp1 
 
 // new committed users
-foreach num of numlist 2 3 6 {
+foreach num of numlist 1 2 3 6 {
     di "numnewusers_t`num'"
-    bysort `unit' time uid: gen tmp1 = (_n==1) * (time==mintime) * (numtime >= 6)
+    bysort `unit' time uid: gen tmp1 = (_n==1) * (time==mintime) * (numtime >= `num')
     bysort `unit' time: egen numnewusers_t`num' = total(tmp1)
     label variable numnewusers_t`num' "New Users (`num')"
     drop tmp1
 }
 
 // new super users
-foreach num of numlist 18 56 {
+foreach num of numlist 1 2 5 18 56 560 {
     di "numserious_c`num'"
     bysort `unit' time uid: gen tmp1 = (_n==1) * (time==mintime) * (numuserc >= `num')
     bysort `unit' time: egen numnewusers_c`num' = total(tmp1)
