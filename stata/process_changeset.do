@@ -77,13 +77,14 @@ makemeanline numusers time 2011 "Users"
 makemeanline numserious18 time 2011 "Super Users"
 
 // 3.2 Cross Sectional Regressions
-crossreg
+//crossreg
 
-// 3.3 Diff in Diff --- Baseline
-local outcomes "numcontrib numuser numserious90"
-dd_simple "`outcomes'" run xtreg
-dd_simple "`outcomes'" run xtpoisson
+// 3.2 Diff in Diff --- Baseline
+local outcomes "numcontrib numusers"
+program drop _all
+dd_simple "`outcomes'" run
 dd_simple "`outcomes'" write ddsimple_baseline
+
 
 // 3.4 Diff in Diff --- Additional
 local outcomes "numnewusers numnewusers6 numnewusers90"
