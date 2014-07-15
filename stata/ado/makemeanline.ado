@@ -3,14 +3,14 @@ program makemeanline
 use ${stash}panelfips, clear
 
 * testing
-* local var numcontri
-* local time quarter
-* local varlabel Contributions
-* local cutoff 2011
+*local var numcontri
+*local time time
+*local varlabel Contributions
+*local cutoff 2011
 
-gen quarter = qofd(dofm(month))
-format quarter %tq
-* gen year = yofd(dofm(month))
+*gen quarter = qofd(dofm(month))
+*format quarter %tq
+*gen year = yofd(dofm(month))
 
 local var `1'
 local time `2'
