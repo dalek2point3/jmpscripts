@@ -92,11 +92,23 @@ dd_simple "`outcomes'" run xtpoisson
 dd_simple "`outcomes'" write ddsimple_additional
 
 
-
 // 3.5 Diff in Diff Picture
+program drop _all
+
 ddchart numuser
-ddchart numcontrib
-ddchart numserious90
+ddchart numserious18
+
+ddchart numnewusers_t2
+
+
+// 3.6 Impact on new users
+newusers_reg
+
+// 3.7 Impact on individuals
+
+
+
+
 
 // 4. How do results vary?
 // takes a while

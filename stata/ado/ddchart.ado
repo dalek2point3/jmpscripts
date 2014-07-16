@@ -5,7 +5,14 @@ program ddchart
 est clear
 use ${stash}panelfips, clear
 
-gen semester = hofd(dofm(month))
+if "${time}" == "quarter"{
+gen semester = hofd(dofq(time))
+}
+
+if "${time}" == "month"{
+gen semester = hofd(dofm(time))
+}
+
 format semester %th
 
 local outcomes `1'
@@ -13,7 +20,7 @@ di "Outcome: `outcomes'"
 ** local outcomes "numuser numserious90"
 
 foreach x in `outcomes'{
-    eststo: xtpoisson `x' 1.treat##b95.semester, fe vce(robust)
+    eststo: xtpoisson `x' 1.treat##b95.semester pop_year, fe vce(robust)
     estimates save ${myestimates}dd_`x', replace
     drawchart `x'
 }
@@ -35,17 +42,21 @@ keep if regexm(parm, "1.*treat.*semester.*") == 1
 gen semester = regexs(1) if regexm(parm, ".*#([0-9][0-9][0-9]?)b?\..*")
 
 destring semester, replace
-replace semester = semester - 95
+* replace semester = semester - 95
 label variable semester "Half-Year"
 
 qui gen xaxis = 0
-replace semester = semester / 2
+**replace semester = semester / 2
 
-graph twoway (connected estimate semester, msize(small) lpattern(solid) lcolor(edkblue) lwidth(thin)) (line min semester, lwidth(vthin) lpattern(-) lcolor(gs8)) (line max semester, lwidth(vthin) lpattern(-) lcolor(gs8)) (line xaxis semester, lwidth(vthin) lcolor(gs8)) if semester > -2, xline(0) legend(off) title("") xtitle("Years")
+replace min = . if semester < 92
+replace max = . if semester < 92
+
+graph twoway (connected estimate semester, msize(small) lpattern(solid) lcolor(edkblue) lwidth(thin)) (line min semester, lwidth(vthin) lpattern(-) lcolor(gs8)) (line max semester, lwidth(vthin) lpattern(-) lcolor(gs8)) (line xaxis semester, lwidth(vthin) lcolor(gs8)) if semester > 93, xline(95) legend(off) title("") xtitle("Yearsx") ysca(range(-1 1))
 
 graph export ${tables}timeline_`var'.eps, replace
 shell epstopdf ${tables}timeline_`var'.eps
 
+list min est max semester
 end
 
 
