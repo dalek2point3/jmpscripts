@@ -38,7 +38,7 @@ drop tmp1
 
 // c) serious users
 // 90 percentile == 18, 95 is 56
-foreach num of numlist 1 2 5 18 56 560 {
+foreach num of numlist 1 2 5 18 56 100 200 560 {
     di "numserious`num'"
     bysort `unit' time uid: gen tmp = (_n==1)*(numuserc > `num')
     bysort `unit' time: egen numserious`num' = total(tmp)
@@ -64,7 +64,7 @@ foreach num of numlist 1 2 3 4 5 6 {
 }
 
 // new super users
-foreach num of numlist 1 2 5 18 56 560 {
+foreach num of numlist 1 2 5 18 56 100 200 560 {
     di "numserious_c`num'"
     bysort `unit' time uid: gen tmp1 = (_n==1) * (time==mintime) * (numuserc >= `num')
     bysort `unit' time: egen numnewusers_c`num' = total(tmp1)

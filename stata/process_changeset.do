@@ -91,24 +91,27 @@ dd_simple "`outcomes'" run xtreg
 dd_simple "`outcomes'" run xtpoisson
 dd_simple "`outcomes'" write ddsimple_additional
 
+// 3.5 Impact on new users of different types
+newusers_reg run
+newusers_reg write
 
-// 3.5 Diff in Diff Picture
+// 3.6 Diff in Diff Picture
 program drop _all
-
-ddchart numuser
-ddchart numserious18
-
+ddchart numuser 92 write
+ddchart numserious56 92 write
 ddchart numnewusers_t2
 
+// 3.7 Impact on Attribute level data
 
-// 3.6 Impact on new users
-newusers_reg
+
 
 // 3.7 Impact on individuals
 
-
-
-
+// next steps
+//1. individual facts
+//2. other layers
+//3. completeness / quality
+//4. model, predictions and whether they confirm?
 
 // 4. How do results vary?
 // takes a while
