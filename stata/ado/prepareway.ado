@@ -3,22 +3,12 @@ insheet using ${rawhist}way_gc.csv, clear
 renamevar
 cleanvar
 droplargeuser
-mergevar
+** mergevar
 
-save ${stash}way_stash, replace
+save ${stash}mergemaster_way, replace
 
 ** save ${stash}way_stash2, replace
 **use ${stash}way_stash, clear
-
-
-program mergevar
-
-drop if fips == "NA"
-merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
-merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
-
-end
-
 
 
 program renamevar
@@ -86,8 +76,6 @@ format tstamp_date %td
 
 gen month = mofd(tstamp_date)
 format month %tm
-
-drop if month == .
 
 // drop non-US items
 drop if fips == "NA" & geoid10 == "NA"

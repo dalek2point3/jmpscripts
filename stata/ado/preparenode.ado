@@ -3,7 +3,7 @@ insheet using ${rawhist}node_gc.csv, clear
 renamevar
 cleanvar
 droplargeuser
-mergevar
+**mergevar
 
 save ${stash}mergemaster_node, replace
 

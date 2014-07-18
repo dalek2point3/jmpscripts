@@ -26,25 +26,31 @@ mergebasic
 qui destring, replace
 save ${stash}panelfips, replace
 
-// 0.3 make node and way datasets
+// 0.3 make node and way datasets producing mergemaster_x datasets
+
 preparenode
-
-use ${stash}mergemaster_node, clear
-makedv fips node
-balancepanel fips node
-save ${stash}panelnode, replace
-
-// 0.3 make way dataset
 prepareway
 
-use ${stash}way_stash, clear
-makedv fips way
+// append the two datasets
+use ${stash}mergemaster_way, clear
+append using ${stash}mergemaster_node, gen(isnode)
 save ${stash}mergemaster_way, replace
 
+// make the data and balance
 use ${stash}mergemaster_way, clear
-balancepanel fips way
-merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
-save ${stash}panelway, replace
+makedv_wn fips
+save ${stash}wn_stash, replace
+
+use ${stash}wn_stash, clear
+balancepanel fips node
+maketime
+mergebasic
+qui destring, replace
+save ${stash}panel_wn, replace
+
+////////////////////////////////
+//// ANALYSIS
+
 
 // 1. Summary Stats
 // Panel A: By county Level
@@ -102,6 +108,8 @@ ddchart numserious56 92 write
 ddchart numnewusers_t2
 
 // 3.7 Impact on Attribute level data
+
+
 
 
 
