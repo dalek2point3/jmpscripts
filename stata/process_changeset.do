@@ -86,10 +86,13 @@ makemeanline numserious18 time 2011 "Super Users"
 
 // 3.2 Diff in Diff --- Baseline
 local outcomes "numcontrib numusers"
-program drop _all
 dd_simple "`outcomes'" run
 dd_simple "`outcomes'" write ddsimple_baseline
 
+// 3.3 Diff in Diff Picture
+ddchart numuser 92 write
+ddchart numserious56 92 write
+ddchart numnewusers_t2
 
 // 3.4 Diff in Diff --- Additional
 local outcomes "numnewusers numnewusers_t2 numnewusers90"
@@ -101,11 +104,9 @@ dd_simple "`outcomes'" write ddsimple_additional
 newusers_reg run
 newusers_reg write
 
-// 3.6 Diff in Diff Picture
-program drop _all
-ddchart numuser 92 write
-ddchart numserious56 92 write
-ddchart numnewusers_t2
+// 4.0 Map Quality
+
+
 
 // 3.7 Impact on Attribute level data
 

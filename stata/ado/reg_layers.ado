@@ -14,21 +14,13 @@ end
 
 program make_data
 
-use ${stash}panelway, clear
+use ${stash}panel_wn, clear
 
-rename numamenity numamenity_way
 
-merge 1:1 fips month using ${stash}panelnode
-drop if _m==1
-
-gen otherlayer = numbuilding + numamenity + numparking +numamenity_way + numaddr
-
-gen amenities = numamenity + numamenity_way
+gen otherlayer = numbuilding + numamenity + numparking + numaddr
 gen bld_addr = numbuilding + numaddr
 
-bysort fips: gen tag = (_n==1)
-
-save ${stash}panelotherlayers, replace
+** save ${stash}panelotherlayers, replace
 
 end
 
@@ -38,7 +30,10 @@ program run_reg
 local cutoff 200169
 **local cutoff 315000
 
-use ${stash}panelotherlayers, clear
+use ${stash}panel_wn, clear
+
+gen otherlayer = numbuilding + numamenity + numparking + numaddr
+gen bld_addr = numbuilding + numaddr
 
 
 est clear
