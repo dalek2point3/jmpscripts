@@ -104,18 +104,23 @@ dd_simple "`outcomes'" write ddsimple_additional
 newusers_reg run
 newusers_reg write
 
+// 3.6 Impact on Existing Users
+
+// 3.7 Impact on Attribute level data
+
+
 // 4.0 Map Quality
 
 // 4.1 Battlegrid
-
 reg_battle
 
+
 // 4.2 Craigslist
+reg_cl
 
 
 
 
-// 3.7 Impact on Attribute level data
 
 
 
@@ -189,7 +194,6 @@ reg_layers
 
 
 // 7. Craiglist
-reg_cl
 
 
 
