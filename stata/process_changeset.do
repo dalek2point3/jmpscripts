@@ -27,7 +27,6 @@ qui destring, replace
 save ${stash}panelfips, replace
 
 // 0.3 make node and way datasets producing mergemaster_x datasets
-
 preparenode
 prepareway
 
@@ -113,6 +112,10 @@ newusers_reg write
 
 // 4.1 Battlegrid
 reg_battle
+
+// 4.2 Other Layers
+reg_layers
+
 
 
 // 4.2 Craigslist
