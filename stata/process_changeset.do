@@ -106,6 +106,13 @@ newusers_reg write
 
 // 4.0 Map Quality
 
+// 4.1 Battlegrid
+
+reg_battle
+
+// 4.2 Craigslist
+
+
 
 
 // 3.7 Impact on Attribute level data

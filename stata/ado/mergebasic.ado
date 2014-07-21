@@ -1,13 +1,19 @@
 program mergebasic
 ** use ${stash}cleanchangeset1, clear
 
+local flag `1'
+
 merge m:1 fips using ${stash}cleancnty, keep(master match) nogen
 
 merge m:1 geoid10 using ${stash}cleanua, keep(master match) nogen
 
 merge m:1 fips year using ${rawmaps}county_pop, keep(master match) nogen
 
-labelvar
+if "`flag'" != "nolabel"{
+    di "flag is `flag'"
+    labelvar
+}
+
 
 ** save ${stash}mergemaster1, replace
 end
@@ -15,11 +21,12 @@ end
 
 program labelvar
 
-label variable fips "FIPS"
-label variable geoid10 "MetroID"
 label variable year "Year"
 label variable time "quarter"
 label variable post "POST"
+
+label variable fips "FIPS"
+label variable geoid10 "MetroID"
 
 label variable treat "1(Treat)"
 label variable cntypop "Population"
