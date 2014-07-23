@@ -47,6 +47,18 @@ mergebasic
 qui destring, replace
 save ${stash}panel_wn, replace
 
+//0.4 make person level data
+program drop _all
+use ${stash}cleanchangeset1, clear
+makedv_person fips
+save ${stash}tmp, replace
+
+balancepanel_person uid
+maketime
+**mergebasic
+qui destring, replace
+save ${stash}paneluid, replace
+
 ////////////////////////////////
 //// ANALYSIS
 
@@ -104,17 +116,23 @@ newusers_reg run
 newusers_reg write
 
 // 3.6 Impact on Existing Users
+use ${stash}paneluid, clear
 
-// 3.7 Impact on Attribute level data
+
+
+ddperson maketables
+
 
 
 // 4.0 Map Quality
 
+
 // 4.1 Battlegrid
 reg_battle
 
-// 4.2 Other Layers
+// 4.2 Other Layers + Attributes
 reg_layers
+
 
 
 
