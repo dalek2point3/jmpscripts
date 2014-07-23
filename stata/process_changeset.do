@@ -116,6 +116,7 @@ newusers_reg run
 newusers_reg write
 
 // 3.6 Impact on Existing Users
+program drop _all
 reg_person
 treat_person
 

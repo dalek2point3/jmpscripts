@@ -16,7 +16,7 @@ bysort unitid: gen tag=_n==1
 keep if tag==1
 gen tmp = round(treat, .1)*10
 
-reg lnnumtime i.tmp, robust
+reg lnnumtime i.tmp i.state, robust
 
 qui parmest, label list(parm estimate min* max* p) saving(${stash}pars_tmp, replace)
 
