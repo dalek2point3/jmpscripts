@@ -16,25 +16,36 @@ use ${clist}bugs, clear
 
 bysort fips: gen bugs = _N
 bysort fips: drop if _n > 1
+gen lnbugs = ln(bugs+1)
 
 gen c2 = cntypop^2
 gen hi_comp = (emp_comp > 20000)
 label variable bugs "Bugs"
 
 est clear
-eststo: reg bugs 1.treat cntypop emp_earn, robust
+eststo: reg bugs 1.treat cntypop emp_earn, cluster(fips)
 qui estadd local statefe "No"
 qui estadd local controls "Yes"
 estimates save ${myestimates}reg_cl5, replace
 
 est clear
-eststo: reg bugs treat##hi_comp cntypop emp_earn, robust
+eststo: reg lnbugs 1.treat cntypop emp_earn, cluster(fips)
 qui estadd local statefe "No"
 qui estadd local controls "Yes"
 estimates save ${myestimates}reg_cl6, replace
 
+/* est clear */
+/* eststo: reg bugs treat##hi_comp cntypop emp_earn, robust */
+/* qui estadd local statefe "No" */
+/* qui estadd local controls "Yes" */
+/* estimates save ${myestimates}reg_cl6, replace */
+
 end
 
+est clear
+eststo: qui reg lnmap 1.treat cntypop emp_earn, cluster(fips)
+eststo: qui logit map 1.treat cntypop emp_earn, cluster(state)
+esttab, keep(1.treat) p
 
 program run_reg_map
 
@@ -43,30 +54,41 @@ merge m:1 fips using ${clist}change_cl, keep(match master)
 drop _m
 
 gen map = (ismap == "map")
+gen lnmap = ln(map+1)
 gen hi_comp = (emp_comp > 20000)
 gen hi_user = (numuser > 300)
 label variable map "HasMap"
 
 est clear
-eststo: qui reg map 1.treat i.state, robust
+eststo: qui reg map 1.treat i.state, cluster(fips)
 qui estadd local statefe "Yes"
 qui estadd local controls "No"
 estimates save ${myestimates}reg_cl1, replace
 
-eststo: qui reg map 1.treat i.state cntypop emp_earn, robust
+eststo: qui reg map 1.treat i.state cntypop emp_earn, cluster(fips)
 qui estadd local statefe "Yes"
 qui estadd local controls "Yes"
 estimates save ${myestimates}reg_cl2, replace
 
-eststo: qui reg map treat##hi_user i.state cntypop emp_earn, robust
+eststo: qui reg lnmap 1.treat i.state, cluster(fips)
 qui estadd local statefe "Yes"
-qui estadd local controls "Yes"
+qui estadd local controls "No"
 estimates save ${myestimates}reg_cl3, replace
 
-eststo: qui reg map treat##hi_comp i.state cntypop emp_earn, robust
+eststo: qui reg lnmap 1.treat i.state cntypop emp_earn, cluster(fips)
 qui estadd local statefe "Yes"
 qui estadd local controls "Yes"
 estimates save ${myestimates}reg_cl4, replace
+
+/* eststo: qui reg map treat##hi_user i.state cntypop emp_earn, robust */
+/* qui estadd local statefe "Yes" */
+/* qui estadd local controls "Yes" */
+/* estimates save ${myestimates}reg_cl3, replace */
+
+/* eststo: qui reg map treat##hi_comp i.state cntypop emp_earn, robust */
+/* qui estadd local statefe "Yes" */
+/* qui estadd local controls "Yes" */
+/* estimates save ${myestimates}reg_cl4, replace */
 
 end
 
@@ -83,7 +105,7 @@ end
 
 program write_reg
 
-esttab using "${tables}reg_cl.tex", drop(*.state _cons cntypop emp_earnings 0b* 1o*) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat "TIGER" 1.hi_user "HiUser" 1.treat#1.hi_user "TIGER X HiUser" 1.hi_comp "HiComputerScience" 1.treat#1.hi_comp "TIGER X HiComputerScience" _cons "Constant") replace booktabs  s(statefe controls N, label("State FE" "Controls")) mtitles("HasMap" "HasMap" "HasMap" "HasMap" "Bugs" "Bugs")
+esttab using "${tables}reg_cl.tex", drop(*.state _cons cntypop emp_earnings) se ar2 nonotes star(+ 0.15 * 0.10 ** 0.05 *** 0.01) coeflabels(1.treat "TIGER" 1.hi_user "HiUser" 1.treat#1.hi_user "TIGER X HiUser" 1.hi_comp "HiComputerScience" 1.treat#1.hi_comp "TIGER X HiComputerScience" _cons "Constant") replace booktabs  s(statefe controls N, label("State FE" "Controls")) mtitles("HasMap" "HasMap" "Ln(HasMap)" "Ln(HasMap)" "Bugs" "Ln(Bugs)")
 
 end
 

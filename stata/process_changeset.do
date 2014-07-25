@@ -135,6 +135,7 @@ reg_layers
 
 
 // 4.2 Craigslist
+program drop _all
 reg_cl
 
 

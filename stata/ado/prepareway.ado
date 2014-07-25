@@ -64,9 +64,11 @@ program cleanvar
 
 drop if timestamp == "NA"
 drop if timestamp == ""
+drop if lon == "NA"
 
 destring timestamp, replace
 destring version, replace
+destring lon, replace
 
 gen tstamp = timestamp*1000 + msofhours(24)*3653 - msofhours(5)
 format tstamp %tc
